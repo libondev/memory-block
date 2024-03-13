@@ -1,0 +1,247 @@
+/* https://andy-bell.co.uk/a-more-modern-css-reset/ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-color: hsl(var(--border))
+}
+
+.scrollbar {
+  scrollbar-gutter: stable both-edges;
+}
+
+@supports (scrollbar-width: thin) {
+  .scrollbar {
+    scrollbar-width: thin;
+  }
+}
+
+@supports (scrollbar-color: #000) {
+  .scrollbar {
+    scrollbar-color: var(--sc);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: var(--bc);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: var(--sc);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sh);
+}
+
+::placeholder {
+  user-select: none;
+}
+
+/*
+--spacing-30: clamp(1.5rem, 5vw, 2rem);
+--spacing-40: clamp(1.8rem, 1.8rem + ((1vw - 0.48rem) * 2.885), 3rem);
+--spacing-50: clamp(2.5rem, 8vw, 4.5rem);
+--spacing-60: clamp(3.75rem, 10vw, 7rem);
+--spacing-70: clamp(5rem, 5.25rem + ((1vw - 0.48rem) * 9.096), 8rem);
+--spacing-80: clamp(7rem, 14vw, 11rem);
+*/
+
+html {
+  --c1: #4997f0;
+  --c2: #8e9eec;
+  --c3: #7f4eea;
+  --c4: #ec8ebf;
+  --c5: #f74e63;
+  --c6: #f8b85c;
+  --cp: #42b883;
+
+  scroll-behavior: smooth;
+  scroll-padding-top: 50px;
+  background-color: var(--background);
+  text-rendering: optimizeLegibility;
+  /* 非标准属性, 目前仅在 macos 上生效 */
+  -webkit-font-smoothing: antialiased;
+
+  /* Prevent font size inflation */
+  -moz-text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+
+  line-height: 1.5;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  color: var(--tc);
+}
+
+ul {
+  margin: 0
+}
+
+
+ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+/* Fallback for browsers that don't support scrollbar-gutter */
+body, .scrollbar {
+  overflow-y: scroll;
+}
+
+/* scrollbar-gutter FTW! */
+@supports (scrollbar-gutter: stable) {
+  body, .scrollbar {
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+}
+
+h1, h2, h3, h4, p,
+figure, blockquote, dl, dd {
+  margin: 0;
+}
+
+ul[role='list'],
+ol[role='list'] {
+  padding-left: 0;
+  list-style: none;
+}
+
+/* input, button {
+  appearance: none;
+} */
+
+p, h1, h2, h3, h4 {
+  overflow-wrap: break-word;
+}
+
+h1, h2, h3, h4 {
+  line-height: 1.1;
+  width: fit-content;
+  text-wrap: balance
+}
+
+
+a {
+  text-decoration: none;
+  color: inherit
+}
+
+img {
+  /* display: block; */
+  max-width: 100%;
+  height: auto;
+  font-style: italic;
+  object-fit: cover;
+  background-size: cover;
+  vertical-align: middle;
+  background-repeat: no-repeat;
+  shape-margin: 0.75rem;
+}
+
+@supports (font: -apple-system-body) and (-webkit-appearance: none) {
+  /* 裁剪掉图片未能加载时的边框 */
+  img[loading="lazy"] {
+    clip-path: inset(0.6px)
+  }
+}
+
+/* Make sure textarea without a rows attribute are not tiny */
+textarea:not([rows]) {
+  min-height: 10em;
+}
+
+/* Anything that has been anchored to should have extra scroll margin */
+:target {
+  scroll-margin-block: 5ex;
+}
+
+/* a:not(.no-underline, .underline):hover {
+  text-decoration: underline dashed;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 1.5px;
+  color: hsl(var(--primary))
+} */
+
+/* 外部链接并且不是以 # 开头的链接加上图标 */
+/* .external-link::after, */
+/* a[target="_blank"]:not([href^="#"], [role="icon"], .no-icon) {
+  content: '';
+  display: inline-block;
+  height: 1em;
+  padding-right: 1em;
+  vertical-align: -3.5px;
+  background-position: right center;
+  background-repeat: no-repeat;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjEgMjEiPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGQ9Ik0xOC41IDguNXYtNWgtNW01IDBsLTcgN20tMS03aC01YTIgMiAwIDAgMC0yIDJ2MTBhMiAyIDAgMCAwIDIgMmgxMWEyIDIgMCAwIDAgMi0ydi00Ii8+PC9zdmc+);
+  background-size: .85em .85em;
+} */
+
+/* kbd {
+  padding: 0.22rem .55rem;
+  border: 2px solid #7d7d7d4d;
+  border-radius: 4px;
+  box-shadow: 0 -1.5px 0 0 #7d7d7d4d inset;
+  font-size: .825rem;
+  pointer-events: none;
+} */
+
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+hr {
+  margin: 30px 5%;
+  border-width: 0;
+  border-bottom: 1px dashed #9ca3af80;
+}
+
+#app {
+  isolation: isolate;
+}
+
+.text-nowrap {
+  display: inline-block;
+  text-decoration: inherit;
+  white-space: nowrap;
+  text-indent: 0;
+}
+
+@supports (-webkit-tap-highlight-color: transparent) {
+  a,
+  button,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@supports (text-wrap: pretty) {
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* 可以等有需要适配的项目再打开 */
+/* 苹果全面屏的底部安全区域, 因为这两个属性的声明是必要的, 所以可以忽略属性重复的错误 */
+/* @supports (bottom: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+} */

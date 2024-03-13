@@ -1,0 +1,7 @@
+dist
+node_modules
+.output
+.nuxt
+.DS_Store
+index.html
+*.d.ts
