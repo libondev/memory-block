@@ -2,9 +2,9 @@
 
 export default function About() {
   return (
-    <>
+    <div className="h-full flex justify-center items-center">
       <div>about page</div>
-      <Link to="/" className="text-14px">IndexPage</Link>
+      {/* <Link to="/" className="text-14px">IndexPage</Link>
       <NavLink
         to="/about"
         className={
@@ -12,7 +12,7 @@ export default function About() {
         }
       >
         Home
-      </NavLink>
-    </>
+      </NavLink> */}
+    </div>
   )
 }
