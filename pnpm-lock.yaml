@@ -8,6 +8,9 @@ dependencies:
   axios:
     specifier: ^1.6.7
     version: 1.6.7
+  canvas-confetti:
+    specifier: ^1.9.2
+    version: 1.9.2
   js-cookie:
     specifier: ^3.0.5
     version: 3.0.5
@@ -22,6 +25,9 @@ devDependencies:
   '@iconify-json/carbon':
     specifier: ^1.1.31
     version: 1.1.31
+  '@iconify-json/game-icons':
+    specifier: ^1.1.7
+    version: 1.1.7
   '@iconify-json/ph':
     specifier: ^1.1.11
     version: 1.1.11
@@ -654,6 +660,12 @@ packages:
 
   /@iconify-json/carbon@1.1.31:
     resolution: {integrity: sha512-CAvECFfiwGyZmlcuM2JLMRDEN3VsIEZv6lml7Xf+3giQ5oXloADm0b5wiVPFZmONKM5jXERmx+E7YSvAtFJIbw==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify-json/game-icons@1.1.7:
+    resolution: {integrity: sha512-qZlG+WtqTZjYvpwTkS8SquPmCMLIz4F183twG/aGF0Q85udUZaxRvEkG+4rUHVL+U6Mv5KnlqTTweCVUMqXCWA==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true
@@ -1920,6 +1932,10 @@ packages:
   /caniuse-lite@1.0.30001597:
     resolution: {integrity: sha512-7LjJvmQU6Sj7bL0j5b5WY/3n7utXUJvAe1lxhsHDbLmwX9mdL86Yjtr+5SRCyf8qME4M7pU2hswj0FpyBVCv9w==}
     dev: true
+
+  /canvas-confetti@1.9.2:
+    resolution: {integrity: sha512-6Xi7aHHzKwxZsem4mCKoqP6YwUG3HamaHHAlz1hTNQPCqXhARFpSXnkC9TWlahHY5CG6hSL5XexNjxK8irVErg==}
+    dev: false
 
   /chalk@2.4.2:
     resolution: {integrity: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==}

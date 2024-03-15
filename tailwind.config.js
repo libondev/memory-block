@@ -78,7 +78,7 @@ export default {
   plugins: [
     animations,
     iconsPlugin({
-      collections: getIconCollections(['solar', 'carbon', 'ph']),
+      collections: getIconCollections(['solar', 'carbon', 'ph', 'game-icons']),
     }),
   ],
 }

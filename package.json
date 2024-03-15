@@ -12,12 +12,14 @@
   },
   "dependencies": {
     "axios": "^1.6.7",
+    "canvas-confetti": "^1.9.2",
     "js-cookie": "^3.0.5"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.8.1",
     "@egoist/tailwindcss-icons": "^1.7.4",
     "@iconify-json/carbon": "^1.1.31",
+    "@iconify-json/game-icons": "^1.1.7",
     "@iconify-json/ph": "^1.1.11",
     "@iconify-json/solar": "^1.1.9",
     "@types/node": "^20.11.26",
