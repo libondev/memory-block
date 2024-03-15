@@ -5,6 +5,7 @@ import { Button } from '@/components/Button'
 import { LEVEL_GRIDS, type Level } from '@/constants/game'
 import {
   generateRandomTarget,
+  getAllCheckedToggle,
   matchAllCheckedResult,
   onResetAllCheckedBoxes,
 } from '@/utils/grid'
@@ -20,7 +21,17 @@ export default function GameLevel() {
   const targetResults = generateRandomTarget(levelConfig)
 
   const onCheckCheckedResult = () => {
+    const boxes = getAllCheckedToggle()
     const result = matchAllCheckedResult(targetResults)
+
+    if (!result) {
+      boxes.forEach((box) => {
+        const el = box.nextSibling!
+
+        if (!targetResults.has(`${box.dataset.row},${box.dataset.col}`))
+          el.style.color = '#f00'
+      })
+    }
 
     console.log(result)
   }
