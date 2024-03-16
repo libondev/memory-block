@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import generatedRoutes from 'virtual:generated-pages'
 
-// import { useUserAuth } from './plugins/user-auth'
 import { useViewTransition } from './plugins/view-transition'
 
 const router = createRouter({
@@ -9,7 +8,6 @@ const router = createRouter({
   routes: generatedRoutes,
 })
 
-// useUserAuth(router)
 useViewTransition(router)
 
 export default router

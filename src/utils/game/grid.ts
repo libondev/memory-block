@@ -1,4 +1,4 @@
-import type { LEVEL_GRIDS, Level } from '@/constants/game.ts'
+import type { LEVEL_GRIDS, Level } from '@/config/game'
 
 export function getAllCheckedBlocks() {
   return [...document.querySelectorAll<HTMLInputElement>('input.peer:checked')]

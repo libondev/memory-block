@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { useStorage } from '@vueuse/core'
+import { name } from '../../package.json'
+import Button from '@/components/Button.vue'
 
 // 如果用户没有设置过主题选项(包含第一次进入系统)，那么就使用系统的明暗主题设置
 const userSystemPreferMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-const siteDarkMode = useStorage('ai.fe.color-mode', userSystemPreferMode)
+const siteDarkMode = useStorage(`${name}.fe.color-mode`, userSystemPreferMode)
 
 const rootElement = document.documentElement.classList
 
@@ -26,10 +28,9 @@ setDarkMode()
 </script>
 
 <template>
-  <button
-    class="cursor-pointer p-2 rounded hover:bg-accent text-xl hover:text-foreground/80 text-foreground/60"
+  <Button
     @click="onToggleMode"
   >
     <i class="block pointer-events-none" :class="siteDarkMode ? 'i-solar-moon-bold' : 'i-solar-sun-bold'" />
-  </button>
+  </Button>
 </template>

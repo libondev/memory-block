@@ -2,15 +2,16 @@
 import confetti from 'canvas-confetti'
 import GameGrid from './components/Grid.vue'
 import Button from '@/components/Button.vue'
+import ToggleMode from '@/components/ToggleMode.vue'
 
-import { LEVEL_GRIDS, type Level } from '@/constants/game'
+import { LEVEL_GRIDS, type Level } from '@/config/game'
 
 import {
   generateRandomTarget,
   getAllCheckedBlocks,
   matchAllCheckedResult,
   resetAllCheckedBlocks,
-} from '@/utils/grid'
+} from '@/utils/game/grid'
 
 const level = useRoute().params.level as Level || 'easy'
 const levelConfig = level in LEVEL_GRIDS ? LEVEL_GRIDS[level] : LEVEL_GRIDS.easy
@@ -120,9 +121,13 @@ onMounted(() => {
 <template>
   <main class="h-full flex items-center justify-center">
     <div>
-      <Button as="RouterLink" to="/">
-        返回
-      </Button>
+      <div class="flex justify-between items-center">
+        <Button as="RouterLink" to="/">
+          <i class="block i-carbon-arrow-left" />
+        </Button>
+
+        <ToggleMode />
+      </div>
 
       <strong class="mt-4 block w-full text-center text-5xl font-medium font-mono">{{ gameScope }}</strong>
 
@@ -149,4 +154,4 @@ onMounted(() => {
       </div>
     </div>
   </main>
-</template>
+</template>@/utils/game/grid@/config/game

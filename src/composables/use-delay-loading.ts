@@ -11,8 +11,8 @@ interface ReturnType {
   cancelLoading: () => void
 }
 
-export function useDelayLoading(valueOrOptions?: boolean): ReturnType;
-export function useDelayLoading(valueOrOptions?: Options): ReturnType;
+export function useDelayLoading(valueOrOptions?: boolean): ReturnType
+export function useDelayLoading(valueOrOptions?: Options): ReturnType
 export function useDelayLoading(valueOrOptions: boolean | Options = {}): ReturnType {
   let timeoutId: number
 

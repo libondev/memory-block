@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Button from '@/components/Button.vue'
-import { LEVEL_BUTTONS } from '@/constants/game'
+import { LEVEL_BUTTONS } from '@/config/game'
 </script>
 
 <template>
@@ -17,4 +17,4 @@ import { LEVEL_BUTTONS } from '@/constants/game'
       </Button>
     </div>
   </div>
-</template>
+</template>@/config/game

@@ -1,18 +1,4 @@
 /**
- * 去除链接中的 query 和 hash
- * @param fullUrl 需要解析的完整的 url 链接
- * @returns url without query and hash
- * @example
- * ```js
- * getBaseURL('http://url.com/page?name=Adam&surname=Smith')
- * // -> 'http://url.com/page'
- * ```
- */
-export function getBaseUrl(fullUrl: string) {
-  return fullUrl.replace(/[?#].*$/, '')
-}
-
-/**
  * 生成一个随机的 UUID
  * @example
  * ```js
@@ -26,16 +12,6 @@ export function getUUID() {
   })
 }
 
-
-/**
- * 获取当前选中的文本
- * @example
- * ```js
- * getSelectedText() // 'Lorem ipsum'
- * ```
- */
-export const getSelectedText = () => window.getSelection()?.toString()
-
 /**
  * 复制文本到剪贴板
  */
@@ -45,28 +21,6 @@ export function copyToClipboard(string: string) {
 
   return Promise.reject(new Error('The Clipboard API is not available.'))
 }
-
-/**
- * 切换指定元素或是 body 为全屏
- */
-export function toggleFullscreen(open = true, element = document.body) {
-  open ? element.requestFullscreen() : document.exitFullscreen()
-}
-
-/**
- * 判断是否为有效的日期
- * @example
- * ```js
- * isDateValid('December 17, 1995 03:24:00') // true
- * isDateValid('1995-12-17T03:24:00') // true
- * isDateValid('1995-12-17 T03:24:00') // false
- * isDateValid('Duck') // false
- * isDateValid(1995, 11, 17) // true
- * isDateValid(1995, 11, 17, 'Duck') // false
- * isDateValid({}) // false
- * ```
- */
-export const isDateValid = (...val: Array<string | number>) => !Number.isNaN(new Date(...val as []).valueOf())
 
 /**
  * 获取指定时间的 24 小时制时间
@@ -85,12 +39,6 @@ export const getDateTimeFromDate = (date: Date = new Date()) => date.toTimeStrin
  * ```
  */
 export const prefersDarkColorScheme = () => window && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-
-/**
- * 判断是否为移动端设备
- * TIP: 只有移动端才有 ontouchstart 属性
- */
-export const isMobileDevice = () => window && 'ontouchstart' in window
 
 /**
  * 是否为空对象
