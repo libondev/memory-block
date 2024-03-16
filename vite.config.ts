@@ -1,21 +1,24 @@
 import { URL, fileURLToPath } from 'node:url'
+
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import autoImport from 'unplugin-auto-import/vite'
+import vue from '@vitejs/plugin-vue'
 import pages from 'vite-plugin-pages'
+import jsx from '@vitejs/plugin-vue-jsx'
+import autoImport from 'unplugin-auto-import/vite'
+import components from 'unplugin-vue-components/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   base: './',
 
   build: {
+    cssMinify: 'lightningcss',
     // 是否输出 gzip 压缩大小的报告，设置 false 可以提高构建速度
     reportCompressedSize: false,
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-dom': ['react-dom', 'react-router-dom'],
-          'ui-vendor': ['antd'],
+          vueuse: ['@vueuse/core'],
         },
       },
     },
@@ -32,36 +35,47 @@ export default defineConfig(({ mode }) => ({
   },
 
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'react-dom/client', 'antd', 'use-immer'],
+    include: ['vue', 'pinia', 'vue-router', 'ts-pattern'],
+    exclude: ['vue-demi'],
   },
 
   plugins: [
-    react(),
+    vue({
+      script: {
+        defineModel: true,
+        propsDestructure: true,
+      },
+    }),
+
+    jsx(),
+
+    components({
+      dts: './shims/components.d.ts',
+      extensions: ['vue', 'tsx'],
+      // globs: ['src/components/**/index.{vue,tsx,ts}']
+    }),
 
     pages({
-      dirs: ['src/pages'],
-      extensions: ['tsx'],
-      exclude: ['**/components/**/*'],
-    }),
-    // https://github.com/antfu/unplugin-auto-import
-    autoImport({
-      include: [/\.[tj]sx?$/],
-      dirs: ['./src/hooks/**/*'],
-      dts: './shims/imports.d.ts',
-      imports: [
-        'react',
-        'react-router-dom',
-        {
-          'clsx': [['default', 'cls']],
-          // react: ['createContext'],
-          'use-immer': ['useImmer', 'useImmerReducer'],
-        },
+      dirs: 'src/views',
+      routeBlockLang: 'yaml',
+      extensions: ['vue', 'tsx'],
+      exclude: [
+        '**/*/components/**/*',
+        '**/*/composables/**/*',
+        '**/*/styles/**/*',
+        '**/*/utils/**/*',
       ],
-      // resolvers: [
-      //   IconsResolver({
-      //     componentPrefix: 'Icon',
-      //   }),
-      // ],
+    }),
+
+    autoImport({
+      dirs: [
+        './src/composables/**',
+      ],
+      dts: './shims/auto-imports.d.ts',
+      imports: [
+        'vue',
+        'vue-router',
+      ],
     }),
   ],
 
@@ -80,5 +94,5 @@ export default defineConfig(({ mode }) => ({
   //       rewrite: (path) => path.replace(/^\/api/, '')
   //     }
   //   }
-  // },
+  // }
 }))

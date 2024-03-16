@@ -7,22 +7,6 @@
   border-color: hsl(var(--border))
 }
 
-.scrollbar {
-  scrollbar-gutter: stable both-edges;
-}
-
-@supports (scrollbar-width: thin) {
-  .scrollbar {
-    scrollbar-width: thin;
-  }
-}
-
-@supports (scrollbar-color: #000) {
-  .scrollbar {
-    scrollbar-color: var(--sc);
-  }
-}
-
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -100,16 +84,16 @@ body,
 
 /* Fallback for browsers that don't support scrollbar-gutter */
 body, .scrollbar {
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 /* scrollbar-gutter FTW! */
-@supports (scrollbar-gutter: stable) {
+/* @supports (scrollbar-gutter: stable) {
   body, .scrollbar {
     overflow-y: auto;
     scrollbar-gutter: stable;
   }
-}
+} */
 
 h1, h2, h3, h4, p,
 figure, blockquote, dl, dd {
@@ -221,6 +205,18 @@ hr {
   text-decoration: inherit;
   white-space: nowrap;
   text-indent: 0;
+}
+
+@supports (scrollbar-width: thin) {
+  .scrollbar {
+    scrollbar-width: thin;
+  }
+}
+
+@supports (scrollbar-color: #000) {
+  .scrollbar {
+    scrollbar-color: var(--sc);
+  }
 }
 
 @supports (-webkit-tap-highlight-color: transparent) {

@@ -1,17 +1,17 @@
 import type { LEVEL_GRIDS, Level } from '@/constants/game.ts'
 
-export function getAllCheckedToggle() {
+export function getAllCheckedBlocks() {
   return [...document.querySelectorAll<HTMLInputElement>('input.peer:checked')]
 }
 
-export function onResetAllCheckedBlocks() {
-  const blocks = getAllCheckedToggle()
+export function resetAllCheckedBlocks() {
+  const blocks = getAllCheckedBlocks()
 
   blocks.forEach(box => box.checked = false)
 }
 
 export function matchAllCheckedResult(results: Set<string>): boolean {
-  const blocks = getAllCheckedToggle()
+  const blocks = getAllCheckedBlocks()
 
   if (
     blocks.length < results.size

@@ -1,13 +1,23 @@
 /// <reference types="vite/client" />
-/// <reference types="vite-plugin-pages/client-react" />
+/// <reference types="vite-plugin-pages/client" />
+/// <reference types="vite-plugin-vue-layouts/client" />
 
 export { }
 
 declare global {
-  export type { FormEvent, FC, ReactNode } from 'react'
+  interface Document {
+    startViewTransition?: (callback: () => Promise<void> | void) => {
+      finished: Promise<void>
+      updateCallbackDone: Promise<void>
+      ready: Promise<void>
+    }
+  }
 
-  export interface Props {
-    children?: ReactNode
-    [key: string]: any
+  interface MatcherResult<Value, Input = unknown> {
+    input: Input
+    state: {
+      matched: boolean
+      value: Value
+    }
   }
 }
