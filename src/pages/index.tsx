@@ -10,7 +10,7 @@ export default function Home() {
         记忆方块
       </h1>
 
-      <div className="mt-14 flex flex-col gap-1.5">
+      <div className="mt-14 flex items-center flex-col gap-1.5">
         {
           LEVEL_BUTTONS.map(button => (
             <Button key={button.path} type={button.type} as={Link} to={button.path}>

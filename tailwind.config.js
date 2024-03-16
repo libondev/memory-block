@@ -3,7 +3,8 @@ import { getIconCollections, iconsPlugin } from '@egoist/tailwindcss-icons'
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: ['class'],
+  // darkMode: ['class'],
+  darkMode: ['media'],
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',

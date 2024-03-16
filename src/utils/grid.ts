@@ -4,22 +4,22 @@ export function getAllCheckedToggle() {
   return [...document.querySelectorAll<HTMLInputElement>('input.peer:checked')]
 }
 
-export function onResetAllCheckedBoxes() {
-  const boxes = getAllCheckedToggle()
+export function onResetAllCheckedBlocks() {
+  const blocks = getAllCheckedToggle()
 
-  boxes.forEach(box => box.checked = false)
+  blocks.forEach(box => box.checked = false)
 }
 
 export function matchAllCheckedResult(results: Set<string>): boolean {
-  const boxes = getAllCheckedToggle()
+  const blocks = getAllCheckedToggle()
 
   if (
-    boxes.length < results.size
-    || boxes.length > results.size
+    blocks.length < results.size
+    || blocks.length > results.size
   )
     return false
 
-  return boxes.every(box => results.has(`${box.dataset.row},${box.dataset.col}`))
+  return blocks.every(box => results.has(`${box.dataset.row},${box.dataset.col}`))
 }
 
 // 生成随机目标
