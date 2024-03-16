@@ -16,8 +16,9 @@ export function getUUID() {
  * 复制文本到剪贴板
  */
 export function copyToClipboard(string: string) {
-  if (navigator && navigator.clipboard && navigator.clipboard.writeText)
+  if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
     return navigator.clipboard.writeText(string)
+  }
 
   return Promise.reject(new Error('The Clipboard API is not available.'))
 }

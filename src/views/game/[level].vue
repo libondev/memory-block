@@ -1,80 +1,88 @@
 <script lang="ts" setup>
 import confetti from 'canvas-confetti'
-import GameGrid from './components/Grid.vue'
 import Button from '@/components/Button.vue'
+import GameGrid from '@/components/GameGrid.vue'
 import ToggleMode from '@/components/ToggleMode.vue'
 
 import { LEVEL_GRIDS, type Level } from '@/config/game'
 
-import {
-  generateRandomTarget,
-  getAllCheckedBlocks,
-  matchAllCheckedResult,
-  resetAllCheckedBlocks,
-} from '@/utils/game/grid'
+import { useGameScope } from '@/composables/use-game-scope'
+import { useCheckedBlocks } from '@/composables/use-checked-blocks'
 
 const level = useRoute().params.level as Level || 'easy'
-const levelConfig = level in LEVEL_GRIDS ? LEVEL_GRIDS[level] : LEVEL_GRIDS.easy
+const levelConfig = LEVEL_GRIDS[level] || LEVEL_GRIDS.easy
 
-const { value: timer, start, reset } = useCountdown({ times: levelConfig.internal })
-
-const gameScope = shallowRef(0)
 const isGameOver = shallowRef(false)
 const isPreviewMode = shallowRef(true)
+const getScopeVisible = shallowRef(false)
 
 // 生成随机高亮的块
 const targetBlocks = shallowRef(new Set<string>())
 
-// 预览模式下高亮块
-function setTargetBlocksActive() {
-  targetBlocks.value.forEach((coordinate) => {
-    const [row, col] = coordinate.split(',')
-    const el = document.querySelector(`[data-row="${row}"][data-col="${col}"]`) as HTMLInputElement
+const {
+  timestamp,
+  gameScope,
+  deltaScope,
+  startScoring,
+  setGameScope,
+  clearTimestamp,
+} = useGameScope(levelConfig)
 
-    if (el)
-      el.checked = true
-  })
-}
+const {
+  uncheckAllBlocks,
+  uncheckWrongBlocks,
+  checkedTargetBlock,
+  markAllWrongBlocks,
+  getAllCheckedResult,
+} = useCheckedBlocks(targetBlocks)
 
-let timeoutId = -1
-function setPreviewStatus() {
-  reset()
-  start()
+const {
+  value: countdown,
+  start: startCountdown,
+  reset: resetCountdown,
+} = useCountdown({ times: levelConfig.internal })
 
-  targetBlocks.value = generateRandomTarget(levelConfig)
+let startTimeoutId = -1
+
+function startGame() {
+  resetCountdown()
+  startCountdown()
+
   isPreviewMode.value = true
-  setTargetBlocksActive()
+  targetBlocks.value = generateRandomTarget(levelConfig)
 
-  clearTimeout(timeoutId)
+  // 重置所有错误块的选中
+  uncheckAllBlocks()
+  uncheckWrongBlocks()
+  checkedTargetBlock()
 
-  timeoutId = window.setTimeout(() => {
+  clearTimeout(startTimeoutId)
+  // 延迟关闭预览模式
+  startTimeoutId = window.setTimeout(() => {
+    // 开始计时计分
+    startScoring()
+    uncheckAllBlocks()
     isPreviewMode.value = false
-    resetAllCheckedBlocks()
   }, levelConfig.internal * 1000)
 }
 
-function onCheckCheckedResult() {
-  const blocks = getAllCheckedBlocks()
+function onCheckResult() {
+  const result = getAllCheckedResult()
 
-  if (!blocks.length) {
-    useToast('还没有勾选方块')
-    return
-  }
-
-  const result = matchAllCheckedResult(targetBlocks.value)
-
-  // 通过
   if (result) {
-    gameScope.value += blocks.length * 10
-    resetAllCheckedBlocks()
-    setPreviewStatus()
+    setGameScope(targetBlocks.value.size)
+
+    getScopeVisible.value = true
+    startGame()
 
     return
   }
 
-  isGameOver.value = true
+  clearTimestamp()
+  markAllWrongBlocks()
+  checkedTargetBlock()
   useToastError('游戏结束')
-  highlightWrongCheckedBlocks()
+  isGameOver.value = true
 
   if (gameScope.value > 0) {
     confetti({
@@ -84,37 +92,37 @@ function onCheckCheckedResult() {
   }
 }
 
-// 高亮选错的元素
-function highlightWrongCheckedBlocks() {
-  const blocks = document.querySelectorAll<HTMLInputElement>('input[data-row][data-col]')
-
-  const wrongBlocks = [] as HTMLElement[]
-
-  blocks.forEach((block) => {
-    const coordinate = `${block.dataset.row},${block.dataset.col}`
-
-    if (targetBlocks.value.has(coordinate)) {
-      block.checked = true
-    } else if (block.checked) {
-      const el = block.nextSibling as HTMLElement
-      wrongBlocks.push(el)
-      el.classList.add('!text-red-500', 'i-carbon-close')
-    }
-  })
-}
-
-function onResetBlocksOrRestartGame() {
-  resetAllCheckedBlocks()
+function onResetBlocks() {
+  uncheckAllBlocks()
 
   if (isGameOver.value) {
     gameScope.value = 0
     isGameOver.value = false
-    setPreviewStatus()
+    startGame()
   }
 }
 
+// 动画结束后隐藏
+function onAnimationend() {
+  getScopeVisible.value = false
+}
+
+function generateRandomTarget({ min, max, grid }: typeof LEVEL_GRIDS[Level]) {
+  const target = new Set<string>()
+  const count = Math.floor(Math.random() * (max - min + 1)) + min
+
+  while (target.size < count) {
+    const row = Math.floor(Math.random() * grid)
+    const col = Math.floor(Math.random() * grid)
+
+    target.add(`${row},${col}`)
+  }
+
+  return target
+}
+
 onMounted(() => {
-  setPreviewStatus()
+  startGame()
 })
 </script>
 
@@ -123,18 +131,45 @@ onMounted(() => {
     <div>
       <div class="flex justify-between items-center">
         <Button as="RouterLink" to="/">
-          <i class="block i-carbon-arrow-left" />
+          <i class="block i-solar-arrow-down-broken rotate-90" />
         </Button>
+
+        <!-- <Button>
+          <i class="block i-solar-volume-loud-broken" />
+          <i class="block i-solar-volume-cross-broken" />
+        </Button> -->
 
         <ToggleMode />
       </div>
 
-      <strong class="mt-4 block w-full text-center text-5xl font-medium font-mono">{{ gameScope }}</strong>
-
-      <h2 className="w-full text-xl text-center mt-6 mb-12">
+      <h2 className="w-full text-xl text-center mt-6">
         {{ isPreviewMode ? '请记住以下方块位置' : '游戏开始' }}
-        <span v-if="timer" class="font-mono">({{ timer }})</span>
+        <span v-if="countdown" class="font-mono">({{ countdown }})</span>
       </h2>
+
+      <div class="my-8 text-[40px] font-mono text-center">
+        {{ gameScope }}
+
+        <Transition name="increase-scope">
+          <span
+            v-show="getScopeVisible"
+            class="absolute text-[80%] text-emerald-500 duration-500 animate-in fade-in slide-in-from-bottom"
+            @animationend="onAnimationend"
+          >+{{ deltaScope }}</span>
+        </Transition>
+      </div>
+
+      <div class="flex mb-2 justify-between items-center text-lg font-mono">
+        <span>
+          <i class="i-solar-stop-broken -mr-1.5 align-[-2.5px]" />
+          {{ targetBlocks.size }}
+        </span>
+
+        <span class="relation text-right">
+          <i class="i-solar-alarm-add-broken -mr-2 align-[-2.5px]" />
+          {{ timestamp }}s
+        </span>
+      </div>
 
       <GameGrid
         :config="levelConfig"
@@ -144,14 +179,26 @@ onMounted(() => {
       />
 
       <div class="mt-12 mb-20  gap-4 flex justify-center">
-        <Button :disabled="isPreviewMode" @click="onResetBlocksOrRestartGame">
+        <Button :disabled="isPreviewMode" @click="onResetBlocks">
           {{ isGameOver ? '再来一次' : '重选' }}
         </Button>
 
-        <Button v-if="!isGameOver" :disabled="isPreviewMode" type="primary" @click="onCheckCheckedResult">
+        <Button v-if="!isGameOver" :disabled="isPreviewMode" type="primary" @click="onCheckResult">
           检查
         </Button>
       </div>
     </div>
   </main>
-</template>@/utils/game/grid@/config/game
+</template>
+
+<style scoped>
+.increase-scope-enter-active,
+.increase-scope-leave-active {
+  transition: all 0.5s ease;
+}
+
+.increase-scope-enter-from,
+.increase-scope-leave-to {
+  opacity: 0;
+}
+</style>

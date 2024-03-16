@@ -8,6 +8,7 @@ export default {
     './src/**/*.{vue,js,ts,jsx,tsx}',
   ],
 
+  // darkMode: ['class'],
   darkMode: ['class'],
 
   plugins: [

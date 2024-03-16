@@ -13,8 +13,9 @@ export function initToast(): HTMLElement {
   const className = 'toast-container'
   const toaster = Toaster || document.querySelector(`#${id}.${className}`) as HTMLElement
 
-  if (toaster)
+  if (toaster) {
     return toaster
+  }
 
   Toaster = Object.assign(
     document.createElement(tagName),

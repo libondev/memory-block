@@ -20,8 +20,9 @@ export function useSetQueryParams<ValueType>({
     value.value = mode
 
     // 如果设置了 urlKey 则表示需要将状态记录在 url
-    if (!urlKey)
+    if (!urlKey) {
       return
+    }
 
     route.query[urlKey] = mode as string
 
@@ -31,8 +32,9 @@ export function useSetQueryParams<ValueType>({
 
     // 如果有历史记录则更新历史记录, 如果不修改这个值而直接设置为 null
     // 在跳转页面的时候会出现一个 vue-router 的警告
-    if (history.state)
+    if (history.state) {
       history.state.current = `${location.href.includes('#') ? '#' : ''}${route.path}?${newQueryString}`
+    }
 
     // 切换后在 url 上记录状态避免刷新后需要重新选择
     history.replaceState(history.state, '', history.state.current)
