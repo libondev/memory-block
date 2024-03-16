@@ -1,14 +1,13 @@
 {
-  "$schema": "https://ui.shadcn.com/schema.json",
   "style": "new-york",
-  "rsc": false,
-  "tsx": true,
+  "typescript": true,
   "tailwind": {
     "config": "tailwind.config.js",
-    "css": "./src/styles/global.css",
+    "css": "src/styles/global.css",
     "baseColor": "slate",
     "cssVariables": true
   },
+  "framework": "vue",
   "aliases": {
     "components": "@/components",
     "utils": "@/utils/cls"

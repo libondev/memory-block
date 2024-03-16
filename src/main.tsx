@@ -1,15 +1,17 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
+import { createApp } from 'vue'
 
-import App from './App'
+import { RouterView } from 'vue-router'
+
+import router from './router'
+
+import { initToast } from '@/composables/use-toast'
 
 import './styles'
 
-createRoot(document.getElementById('app') as HTMLElement).render(
-  <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </StrictMode>,
-)
+const app = createApp(<RouterView />)
+
+app.use(router)
+
+app.mount('#app')
+
+initToast()

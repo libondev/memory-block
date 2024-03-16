@@ -1,4 +1,8 @@
-export default class LRUCache<K, V> {
+export default function (capacity: number = 10) {
+  return new LRUCache(capacity)
+}
+
+export class LRUCache<K, V> {
   private readonly items: Map<K, V>
   private readonly capacity: number
 

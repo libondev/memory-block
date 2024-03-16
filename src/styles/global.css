@@ -88,11 +88,3 @@
     padding-right: 1rem
   }
 }
-
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: black;
-    color: white;
-  }
-}

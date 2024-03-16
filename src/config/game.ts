@@ -8,9 +8,10 @@ export const LEVEL_BUTTONS = [
 export const LEVEL_GRIDS = {
   easy: {
     grid: 4,
-    min: 3,
-    max: 5,
-    internal: 5,
+    min: 2,
+    max: 4,
+    rate: 1,
+    internal: 1,
     size: 'size-12',
   },
 
@@ -18,24 +19,27 @@ export const LEVEL_GRIDS = {
     grid: 5,
     min: 5,
     max: 9,
+    rate: 1.2,
     internal: 4,
-    size: 'size-10',
+    size: 'size-11',
   },
 
   master: {
-    grid: 6,
+    grid: 7,
     min: 8,
     max: 12,
+    rate: 1.5,
     internal: 3,
     size: 'size-10',
   },
 
   expert: {
-    grid: 8,
+    grid: 9,
     min: 10,
     max: 15,
+    rate: 1.8,
     internal: 3,
-    size: 'size-10',
+    size: 'size-8',
   },
 } as const
 
