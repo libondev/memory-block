@@ -34,17 +34,15 @@ jobs:
         uses: pnpm/action-setup@v2.0.1
         with:
           version: 7.13.4
-      - name: Build Core
-        run: pwd && pnpm i && pnpm --filter ./packages/core i && pnpm run build
-      - name: Build example
-        run: pwd && pnpm --filter ./packages/example i && pnpm run build:example
+      - name: Build
+        run: pwd && pnpm run build
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload entire repository
-          path: './packages/example/dist'
+          path: './dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
