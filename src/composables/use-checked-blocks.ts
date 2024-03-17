@@ -107,18 +107,19 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
   function getAllCheckedResult() {
     const checkedBlocks = getAllCheckedBlocks()
 
-    if (!checkedBlocks.length) {
-      useToast('请先选中方块')
-      return false
-    }
-
     // 如果选中的数量和生成的数量不相等
     if (checkedBlocks.length !== blocks.value.size) {
-      return false
+      return {
+        matched: false,
+        blocks: checkedBlocks,
+      }
     }
 
     // 检查所有选中的块的匹配状态
-    return checkedBlocks.every(block => blocks.value.has(`${block.dataset.row},${block.dataset.col}`))
+    return {
+      matched: checkedBlocks.every(block => blocks.value.has(`${block.dataset.row},${block.dataset.col}`)),
+      blocks: checkedBlocks,
+    }
   }
 
   onMounted(() => {
