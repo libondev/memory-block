@@ -10,8 +10,11 @@ const level = useRoute().params.level as Level || 'easy'
 const levelConfig = LEVEL_GRIDS[level] || LEVEL_GRIDS.easy
 
 const isGameOver = shallowRef(false)
+const isGamePause = shallowRef(false)
 const isPreviewMode = shallowRef(true)
 const getScopeVisible = shallowRef(false)
+
+const gameHealth = shallowRef(levelConfig.health)
 
 // 生成随机高亮的块
 const targetBlocks = shallowRef(new Set<string>())
@@ -22,7 +25,7 @@ const {
   deltaScope,
   startScoring,
   setGameScope,
-  clearTimestamp,
+  stopTimestamp,
 } = useGameScope(levelConfig)
 
 const {
@@ -67,9 +70,15 @@ function startGame() {
 }
 
 function onCheckResult() {
-  const result = getAllCheckedResult()
+  const { matched, blocks } = getAllCheckedResult()
 
-  if (result) {
+  if (!matched && !blocks.length) {
+    useToast('请先选择至少一个方块')
+    return
+  }
+
+  // 如果匹配成功
+  if (matched) {
     getScopeVisible.value = true
     setGameScope(targetBlocks.value.size)
     startGame()
@@ -77,12 +86,33 @@ function onCheckResult() {
     return
   }
 
-  clearTimestamp()
+  // 如果上一步是选错的
+  if (isGamePause.value) {
+    startGame()
+    isGamePause.value = false
+    return
+  }
+
+  // 如果还有生命值
+  if (gameHealth.value > 0) {
+    stopTimestamp()
+    markAllMissBlocks()
+    markAllWrongBlocks()
+
+    gameHealth.value--
+    isGamePause.value = true
+
+    return
+  }
+
+  stopTimestamp()
   markAllMissBlocks()
   markAllWrongBlocks()
   useToastError('游戏结束')
   isGameOver.value = true
 
+  // 有分数才生成纸屑, 否则会有点嘲笑 0 分的意思:)
+  // 游戏结束时, 分数越高, 生成越多的纸屑
   if (gameScope.value > 0) {
     confetti({
       // 根据分数生成纸屑数量
@@ -132,7 +162,7 @@ onBeforeUnmount(() => {
 <template>
   <main class="h-full flex items-center justify-center">
     <div>
-      <h2 className="w-full text-xl text-center mt-6">
+      <h2 className="w-full text-xl text-center">
         {{ isPreviewMode ? '请记住以下方块位置' : '游戏开始' }}
         <span v-if="countdown" class="font-mono">({{ countdown }})</span>
       </h2>
@@ -143,19 +173,24 @@ onBeforeUnmount(() => {
         <Transition name="increase-scope">
           <span
             v-show="getScopeVisible"
-            class="absolute text-[80%] text-emerald-500 duration-500 animate-in fade-in slide-in-from-bottom"
+            class="absolute text-[60%] text-emerald-500 duration-500 animate-in fade-in slide-in-from-bottom"
             @animationend="onAnimationend"
           >+{{ deltaScope }}</span>
         </Transition>
       </div>
 
       <div class="flex mb-2 justify-between items-center text-lg font-mono">
-        <span>
-          <i class="i-solar-stop-bold text-emerald-500 dark:text-emerald-600 -mr-1.5 align-[-2.5px]" />
+        <span class="flex-1">
+          <i class="i-solar-stop-bold text-emerald-500 -mr-2 align-[-2.5px]" />
           {{ targetBlocks.size }}
         </span>
 
-        <span class="relation text-right">
+        <span class="flex-1 text-center">
+          <i class="i-solar-health-bold text-xl text-red-500 -mr-2 align-[-3px]" />
+          {{ gameHealth }}
+        </span>
+
+        <span class="flex-1 relation text-right">
           <i class="i-solar-alarm-add-broken -mr-2 align-[-2.5px]" />
           {{ timestamp }}s
         </span>
@@ -163,17 +198,24 @@ onBeforeUnmount(() => {
 
       <GameGrid
         :config="levelConfig"
-        :preview="isPreviewMode"
-        :class="{ 'pointer-events-none': isPreviewMode || isGameOver }"
+        :class="{ 'pointer-events-none': isPreviewMode || isGameOver || isGamePause }"
       />
 
       <div class="mt-12 mb-20  gap-4 flex justify-center">
-        <Button :disabled="isPreviewMode" @click="onResetBlocks">
-          {{ isGameOver ? '再来一次' : '重选' }}
+        <Button
+          :disabled="isPreviewMode || isGamePause"
+          @click="onResetBlocks"
+        >
+          {{ isGameOver ? '再来一次' : '清空选中' }}
         </Button>
 
-        <Button v-if="!isGameOver" :disabled="isPreviewMode" type="primary" @click="onCheckResult">
-          检查
+        <Button
+          v-show="!isGameOver"
+          :disabled="isPreviewMode"
+          :type="isGamePause ? 'warning' : 'primary'"
+          @click="onCheckResult"
+        >
+          {{ isGamePause ? '确认结果' : '确定选择' }}
         </Button>
       </div>
     </div>

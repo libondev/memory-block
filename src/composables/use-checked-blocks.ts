@@ -19,10 +19,8 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
    */
   function markAllMissBlocks() {
     allBlocks.forEach((block) => {
-      const coordinate = `${block.dataset.row},${block.dataset.col}`
-
       // 本该选中但是却没有选中
-      if (blocks.value.has(coordinate) && !block.checked) {
+      if (blocks.value.has(block.dataset.axis!) && !block.checked) {
         const el = block.nextSibling as HTMLElement
 
         el.classList.add('!text-yellow-500', 'i-carbon-warning')
@@ -38,9 +36,7 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
     const checkedBlocks = getAllCheckedBlocks()
 
     checkedBlocks.forEach((block) => {
-      const coordinate = `${block.dataset.row},${block.dataset.col}`
-
-      if (!blocks.value.has(coordinate)) {
+      if (!blocks.value.has(block.dataset.axis!)) {
         // 如果选错了, 则收集起来, 再重置的时候需要删除状态
         const el = block.nextSibling as HTMLElement
 
@@ -86,9 +82,7 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
    */
   function checkedTargetBlock() {
     allBlocks.forEach((block) => {
-      const coordinate = `${block.dataset.row},${block.dataset.col}`
-
-      if (blocks.value.has(coordinate)) {
+      if (blocks.value.has(block.dataset.axis!)) {
         block.checked = true
       }
     })
@@ -107,18 +101,19 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
   function getAllCheckedResult() {
     const checkedBlocks = getAllCheckedBlocks()
 
-    if (!checkedBlocks.length) {
-      useToast('请先选中方块')
-      return false
-    }
-
     // 如果选中的数量和生成的数量不相等
     if (checkedBlocks.length !== blocks.value.size) {
-      return false
+      return {
+        matched: false,
+        blocks: checkedBlocks,
+      }
     }
 
     // 检查所有选中的块的匹配状态
-    return checkedBlocks.every(block => blocks.value.has(`${block.dataset.row},${block.dataset.col}`))
+    return {
+      matched: checkedBlocks.every(block => blocks.value.has(block.dataset.axis!)),
+      blocks: checkedBlocks,
+    }
   }
 
   onMounted(() => {

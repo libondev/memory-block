@@ -23,7 +23,7 @@ export function useGameScope({ rate: multiplier }: typeof LEVEL_GRIDS[Level]) {
   }
 
   function setGameScope(counts: number) {
-    clearTimestamp()
+    stopTimestamp()
     const deltaTime = performance.now() - lastTimestamp
 
     // 时间每过 5 秒倍率 -1, 直到倍率为 1
@@ -34,7 +34,7 @@ export function useGameScope({ rate: multiplier }: typeof LEVEL_GRIDS[Level]) {
     gameScope.value += deltaScope.value
   }
 
-  function clearTimestamp() {
+  function stopTimestamp() {
     clearInterval(timestampId)
   }
 
@@ -44,6 +44,6 @@ export function useGameScope({ rate: multiplier }: typeof LEVEL_GRIDS[Level]) {
     deltaScope,
     startScoring,
     setGameScope,
-    clearTimestamp,
+    stopTimestamp,
   }
 }

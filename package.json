@@ -18,6 +18,7 @@
     "axios": "^1.6.8",
     "canvas-confetti": "^1.9.2",
     "date-fns": "^3.5.0",
+    "localforage": "^1.10.0",
     "pinia": "^2.1.7",
     "ts-pattern": "^5.0.8",
     "vue": "^3.4.21",
