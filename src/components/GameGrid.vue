@@ -15,9 +15,8 @@ defineProps({
       <div v-for="_col, colIndex of config.grid" :key="_col" class="border-inherit border-l p-1">
         <Toggle
           :size="config.size"
-          :data-row="rowIndex"
-          :data-col="colIndex"
           color="text-emerald-500"
+          :data-axis="`${rowIndex},${colIndex}`"
         />
       </div>
     </div>

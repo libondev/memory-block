@@ -198,16 +198,23 @@ onBeforeUnmount(() => {
 
       <GameGrid
         :config="levelConfig"
-        :preview="isPreviewMode"
-        :class="{ 'pointer-events-none': isPreviewMode || isGameOver }"
+        :class="{ 'pointer-events-none': isPreviewMode || isGameOver || isGamePause }"
       />
 
       <div class="mt-12 mb-20  gap-4 flex justify-center">
-        <Button :disabled="isPreviewMode" @click="onResetBlocks">
+        <Button
+          :disabled="isPreviewMode || isGamePause"
+          @click="onResetBlocks"
+        >
           {{ isGameOver ? '再来一次' : '清空选中' }}
         </Button>
 
-        <Button v-if="!isGameOver" :disabled="isPreviewMode" :type="isGamePause ? 'warning' : 'primary'" @click="onCheckResult">
+        <Button
+          v-show="!isGameOver"
+          :disabled="isPreviewMode"
+          :type="isGamePause ? 'warning' : 'primary'"
+          @click="onCheckResult"
+        >
           {{ isGamePause ? '确认结果' : '确定选择' }}
         </Button>
       </div>

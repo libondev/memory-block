@@ -19,10 +19,8 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
    */
   function markAllMissBlocks() {
     allBlocks.forEach((block) => {
-      const coordinate = `${block.dataset.row},${block.dataset.col}`
-
       // 本该选中但是却没有选中
-      if (blocks.value.has(coordinate) && !block.checked) {
+      if (blocks.value.has(block.dataset.axis!) && !block.checked) {
         const el = block.nextSibling as HTMLElement
 
         el.classList.add('!text-yellow-500', 'i-carbon-warning')
@@ -38,9 +36,7 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
     const checkedBlocks = getAllCheckedBlocks()
 
     checkedBlocks.forEach((block) => {
-      const coordinate = `${block.dataset.row},${block.dataset.col}`
-
-      if (!blocks.value.has(coordinate)) {
+      if (!blocks.value.has(block.dataset.axis!)) {
         // 如果选错了, 则收集起来, 再重置的时候需要删除状态
         const el = block.nextSibling as HTMLElement
 
@@ -86,9 +82,7 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
    */
   function checkedTargetBlock() {
     allBlocks.forEach((block) => {
-      const coordinate = `${block.dataset.row},${block.dataset.col}`
-
-      if (blocks.value.has(coordinate)) {
+      if (blocks.value.has(block.dataset.axis!)) {
         block.checked = true
       }
     })
@@ -117,7 +111,7 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
 
     // 检查所有选中的块的匹配状态
     return {
-      matched: checkedBlocks.every(block => blocks.value.has(`${block.dataset.row},${block.dataset.col}`)),
+      matched: checkedBlocks.every(block => blocks.value.has(block.dataset.axis!)),
       blocks: checkedBlocks,
     }
   }
