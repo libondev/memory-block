@@ -111,6 +111,8 @@ function onCheckResult() {
   useToastError('游戏结束')
   isGameOver.value = true
 
+  // 有分数才生成纸屑, 否则会有点嘲笑 0 分的意思:)
+  // 游戏结束时, 分数越高, 生成越多的纸屑
   if (gameScope.value > 0) {
     confetti({
       // 根据分数生成纸屑数量
