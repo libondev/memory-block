@@ -4,7 +4,7 @@ import { LEVEL_BUTTONS } from '@/config/game'
 
 <template>
   <div className="h-full flex flex-col items-center justify-center">
-    <h2 className="-mt-40 text-center text-3xl text-medium font-mono">
+    <h2 className="-mt-32 text-center text-3xl text-medium font-mono">
       Memory Block
       <br>
       记忆方块

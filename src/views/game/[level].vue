@@ -28,6 +28,8 @@ const {
 const {
   uncheckAllBlocks,
   uncheckWrongBlocks,
+  uncheckMissBlocks,
+  markAllMissBlocks,
   checkedTargetBlock,
   markAllWrongBlocks,
   getAllCheckedResult,
@@ -50,6 +52,7 @@ function startGame() {
 
   // 重置所有错误块的选中
   uncheckAllBlocks()
+  uncheckMissBlocks()
   uncheckWrongBlocks()
   checkedTargetBlock()
 
@@ -75,8 +78,8 @@ function onCheckResult() {
   }
 
   clearTimestamp()
+  markAllMissBlocks()
   markAllWrongBlocks()
-  checkedTargetBlock()
   useToastError('游戏结束')
   isGameOver.value = true
 
@@ -160,7 +163,6 @@ onBeforeUnmount(() => {
 
       <GameGrid
         :config="levelConfig"
-        :blocks="targetBlocks"
         :preview="isPreviewMode"
         :class="{ 'pointer-events-none': isPreviewMode || isGameOver }"
       />

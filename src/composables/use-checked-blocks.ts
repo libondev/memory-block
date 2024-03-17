@@ -1,6 +1,7 @@
 export function useCheckedBlocks(blocks: Ref<Set<string>>) {
   const allBlocks = [] as HTMLInputElement[]
-  const wrongBlocks = [] as HTMLSpanElement[]
+  const missBlocks = [] as HTMLElement[]
+  const wrongBlocks = [] as HTMLElement[]
 
   /**
    * 获取页面中所有的 block
@@ -11,6 +12,23 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
     )
 
     allBlocks.push(...blocks)
+  }
+
+  /**
+   * 标记所有漏选的 block
+   */
+  function markAllMissBlocks() {
+    allBlocks.forEach((block) => {
+      const coordinate = `${block.dataset.row},${block.dataset.col}`
+
+      // 本该选中但是却没有选中
+      if (blocks.value.has(coordinate) && !block.checked) {
+        const el = block.nextSibling as HTMLElement
+
+        el.classList.add('!text-yellow-500', 'i-carbon-warning')
+        missBlocks.push(el)
+      }
+    })
   }
 
   /**
@@ -26,7 +44,7 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
         // 如果选错了, 则收集起来, 再重置的时候需要删除状态
         const el = block.nextSibling as HTMLElement
 
-        el.classList.add('!text-red-500', 'i-carbon-close')
+        el.classList.add('!text-red-500', 'i-carbon-close-large')
         wrongBlocks.push(el)
       }
     })
@@ -42,12 +60,25 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
   }
 
   /**
+   * 取消选择所有漏选的
+   */
+  function uncheckMissBlocks() {
+    missBlocks.forEach((el) => {
+      el.classList.remove('!text-yellow-500', 'i-carbon-warning')
+    })
+
+    missBlocks.splice(0)
+  }
+
+  /**
    * 取消选择所有选错的 block
    */
   function uncheckWrongBlocks() {
     wrongBlocks.forEach((el) => {
-      el.classList.remove('!text-red-500', 'i-carbon-close')
+      el.classList.remove('!text-red-500', 'i-carbon-close-large')
     })
+
+    wrongBlocks.splice(0)
   }
 
   /**
@@ -96,14 +127,17 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
 
   onBeforeUnmount(() => {
     allBlocks.splice(0)
+    missBlocks.splice(0)
     wrongBlocks.splice(0)
   })
 
   return {
     uncheckAllBlocks,
-    uncheckWrongBlocks,
     checkedTargetBlock,
+    markAllMissBlocks,
+    uncheckMissBlocks,
     markAllWrongBlocks,
+    uncheckWrongBlocks,
     getAllCheckedResult,
   }
 }
