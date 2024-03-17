@@ -1,8 +1,5 @@
 <script lang="ts" setup>
 import confetti from 'canvas-confetti'
-import Button from '@/components/Button.vue'
-import GameGrid from '@/components/GameGrid.vue'
-import ToggleMode from '@/components/ToggleMode.vue'
 
 import { LEVEL_GRIDS, type Level } from '@/config/game'
 
@@ -70,9 +67,8 @@ function onCheckResult() {
   const result = getAllCheckedResult()
 
   if (result) {
-    setGameScope(targetBlocks.value.size)
-
     getScopeVisible.value = true
+    setGameScope(targetBlocks.value.size)
     startGame()
 
     return
@@ -124,24 +120,15 @@ function generateRandomTarget({ min, max, grid }: typeof LEVEL_GRIDS[Level]) {
 onMounted(() => {
   startGame()
 })
+
+onBeforeUnmount(() => {
+  clearTimeout(startTimeoutId)
+})
 </script>
 
 <template>
   <main class="h-full flex items-center justify-center">
     <div>
-      <div class="flex justify-between items-center">
-        <Button as="RouterLink" to="/">
-          <i class="block i-solar-arrow-down-broken rotate-90" />
-        </Button>
-
-        <!-- <Button>
-          <i class="block i-solar-volume-loud-broken" />
-          <i class="block i-solar-volume-cross-broken" />
-        </Button> -->
-
-        <ToggleMode />
-      </div>
-
       <h2 className="w-full text-xl text-center mt-6">
         {{ isPreviewMode ? '请记住以下方块位置' : '游戏开始' }}
         <span v-if="countdown" class="font-mono">({{ countdown }})</span>
@@ -161,7 +148,7 @@ onMounted(() => {
 
       <div class="flex mb-2 justify-between items-center text-lg font-mono">
         <span>
-          <i class="i-solar-stop-broken -mr-1.5 align-[-2.5px]" />
+          <i class="i-solar-stop-bold text-emerald-500 dark:text-emerald-600 -mr-1.5 align-[-2.5px]" />
           {{ targetBlocks.size }}
         </span>
 
