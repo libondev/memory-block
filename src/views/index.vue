@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LEVEL_BUTTONS } from '@/config/game'
+import { LEVELS } from '@/config/game'
 </script>
 
 <template>
@@ -11,7 +11,7 @@ import { LEVEL_BUTTONS } from '@/config/game'
     </h2>
 
     <div className="mt-20 flex items-center flex-col gap-2">
-      <Button v-for="btn of LEVEL_BUTTONS" :key="btn.path" :to="btn.path" :type="btn.type" as="RouterLink">
+      <Button v-for="btn of LEVELS" :key="btn.path" :to="btn.path" :type="btn.type" as="RouterLink">
         {{ btn.zh }}
       </Button>
     </div>
