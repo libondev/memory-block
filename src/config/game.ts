@@ -3,6 +3,7 @@ export const LEVEL_BUTTONS = [
   { type: 'primary', en: 'Normal Level', zh: '中等难度', path: '/game/normal' },
   { type: 'warning', en: 'Master Level', zh: '困难难度', path: '/game/master' },
   { type: 'danger', en: 'Expert Level', zh: '专家难度', path: '/game/expert' },
+  // { type: 'custom', en: 'Practice Mode', zh: '练习模式', path: '/game/expert' },
 ] as const
 
 export const LEVEL_GRIDS = {
@@ -11,7 +12,7 @@ export const LEVEL_GRIDS = {
     min: 2,
     max: 4,
     rate: 1,
-    internal: 1,
+    internal: 2,
     size: 'size-12',
   },
 
@@ -20,7 +21,7 @@ export const LEVEL_GRIDS = {
     min: 5,
     max: 9,
     rate: 1.2,
-    internal: 4,
+    internal: 3,
     size: 'size-11',
   },
 

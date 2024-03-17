@@ -49,11 +49,15 @@ export function useCountdown({
   }
 
   function reset() {
-    clearTimeout(timeoutId)
+    pause()
     remainder.value = times
   }
 
   immediate && start()
+
+  onBeforeUnmount(() => {
+    pause()
+  })
 
   return {
     pause,
