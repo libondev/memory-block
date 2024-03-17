@@ -34,8 +34,10 @@ jobs:
         uses: pnpm/action-setup@v2.0.1
         with:
           version: 7.13.4
+      - name: Install
+        run:  pnpm install
       - name: Build
-        run: pwd && pnpm run build
+        run:  pnpm run build
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
