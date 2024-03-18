@@ -4,6 +4,12 @@ import { name } from '../../package.json'
 interface GameSounds {
   enableSounds: Ref<boolean>
   toggleSounds: () => void
+  sounds: {
+    over: HTMLAudioElement
+    error: HTMLAudioElement
+    // choose: HTMLAudioElement
+    success: HTMLAudioElement
+  }
 }
 
 export const gameSoundsInjectionKey = Symbol('gameSounds') as InjectionKey<GameSounds>
@@ -12,26 +18,22 @@ export function provideGameSounds() {
   const enableSounds = useStorage(`${name}.fe.game-sounds`, true)
   const toggleSounds = useToggle(enableSounds)
 
+  const sounds = {
+    over: new Audio(new URL('/over.mp3', import.meta.url).href),
+    error: new Audio(new URL('/error.mp3', import.meta.url).href),
+    // choose: new Audio(new URL('/choose.mp3', import.meta.url).href),
+    success: new Audio(new URL('/success.mp3', import.meta.url).href),
+  }
+
   provide(gameSoundsInjectionKey, {
     enableSounds,
     toggleSounds,
+    sounds,
   })
 }
 
 export function useGameSounds() {
-  const { enableSounds } = inject(gameSoundsInjectionKey)!
-
-  const [
-    // chooseAudio,
-    overAudio,
-    errorAudio,
-    successAudio,
-  ] = [
-    // new Audio(new URL('/choose.mp3', import.meta.url).href),
-    new Audio(new URL('/over.mp3', import.meta.url).href),
-    new Audio(new URL('/error.mp3', import.meta.url).href),
-    new Audio(new URL('/success.mp3', import.meta.url).href),
-  ]
+  const { sounds, enableSounds } = inject(gameSoundsInjectionKey)!
 
   return {
     // choose: () => {
@@ -48,7 +50,7 @@ export function useGameSounds() {
         return
       }
 
-      successAudio.play()
+      sounds.success.play()
     },
 
     error: () => {
@@ -57,7 +59,7 @@ export function useGameSounds() {
       }
 
       // audio.src = new URL('/error.mp3', import.meta.url).href
-      errorAudio.play()
+      sounds.error.play()
     },
 
     over: () => {
@@ -65,7 +67,7 @@ export function useGameSounds() {
         return
       }
 
-      overAudio.play()
+      sounds.over.play()
     },
   }
 }
