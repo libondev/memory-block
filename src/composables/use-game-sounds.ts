@@ -14,42 +14,58 @@ export function provideGameSounds() {
 
   provide(gameSoundsInjectionKey, {
     enableSounds,
-    toggleSounds
+    toggleSounds,
   })
 }
 
 export function useGameSounds() {
   const { enableSounds } = inject(gameSoundsInjectionKey)!
 
-  const audio = new Audio()
+  const [
+    // chooseAudio,
+    overAudio,
+    errorAudio,
+    successAudio,
+  ] = [
+    // new Audio(new URL('/choose.mp3', import.meta.url).href),
+    new Audio(new URL('/over.mp3', import.meta.url).href),
+    new Audio(new URL('/error.mp3', import.meta.url).href),
+    new Audio(new URL('/success.mp3', import.meta.url).href),
+  ]
 
   return {
-    choose: () => {
-      if (!enableSounds.value) return
+    // choose: () => {
+    //   if (!enableSounds.value) {
+    //     return
+    //   }
 
-      audio.src = `/choose.mp3`
-      audio.play()
-    },
+    //   audio.src = new URL('/choose.mp3', import.meta.url).href
+    //   audio.play()
+    // },
 
     success: () => {
-      if (!enableSounds.value) return
+      if (!enableSounds.value) {
+        return
+      }
 
-      audio.src = `/success.mp3`
-      audio.play()
+      successAudio.play()
     },
 
     error: () => {
-      if (!enableSounds.value) return
+      if (!enableSounds.value) {
+        return
+      }
 
-      audio.src = `/error.mp3`
-      audio.play()
+      // audio.src = new URL('/error.mp3', import.meta.url).href
+      errorAudio.play()
     },
 
     over: () => {
-      if (!enableSounds.value) return
+      if (!enableSounds.value) {
+        return
+      }
 
-      audio.src = `/over.mp3`
-      audio.play()
-    }
+      overAudio.play()
+    },
   }
 }
