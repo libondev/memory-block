@@ -20,6 +20,12 @@ const gameHealth = shallowRef(levelConfig.health)
 const targetBlocks = shallowRef(new Set<string>())
 
 const {
+  over: playOver,
+  error: playError,
+  success: playSuccess
+} = useGameSounds()
+
+const {
   timestamp,
   gameScope,
   deltaScope,
@@ -82,6 +88,7 @@ function onCheckResult() {
     getScopeVisible.value = true
     setGameScope(targetBlocks.value.size)
     startGame()
+    playSuccess()
 
     return
   }
@@ -99,6 +106,7 @@ function onCheckResult() {
     markAllMissBlocks()
     markAllWrongBlocks()
 
+    playError()
     gameHealth.value--
     isGamePause.value = true
 
@@ -110,6 +118,7 @@ function onCheckResult() {
   markAllWrongBlocks()
   useToastError('游戏结束')
   isGameOver.value = true
+  playOver()
 
   // 有分数才生成纸屑, 否则会有点嘲笑 0 分的意思:)
   // 游戏结束时, 分数越高, 生成越多的纸屑

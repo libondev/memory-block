@@ -1,5 +1,11 @@
 <script lang="ts" setup>
 import ToggleMode from './ToggleMode.vue'
+import { gameSoundsInjectionKey } from '@/composables/use-game-sounds'
+
+const {
+  enableSounds,
+  toggleSounds
+} = inject(gameSoundsInjectionKey)!
 </script>
 
 <template>
@@ -11,14 +17,13 @@ import ToggleMode from './ToggleMode.vue'
     </h1>
 
     <div class="pt-2 flex items-center gap-2">
-      <!-- <Button>
-          <i class="block i-solar-volume-loud-broken" />
-          <i class="block i-solar-volume-cross-broken" />
-        </Button> -->
-
-      <Button as="RouterLink" to="/record">
-        <i class="block i-solar-calendar-bold" />
+      <Button @click="toggleSounds()">
+        <i class="block" :class="enableSounds ? 'i-solar-volume-loud-broken' : 'i-solar-volume-cross-broken text-red-500'" />
       </Button>
+
+      <!-- <Button as="RouterLink" to="/record">
+        <i class="block i-solar-calendar-bold" />
+      </Button> -->
 
       <ToggleMode />
 
