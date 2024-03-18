@@ -12,6 +12,7 @@ declare module 'vue' {
     Header: typeof import('./../src/components/Header.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Tag: typeof import('./../src/components/Tag.vue')['default']
     Toggle: typeof import('./../src/components/Toggle.vue')['default']
     ToggleMode: typeof import('./../src/components/ToggleMode.vue')['default']
   }

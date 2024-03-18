@@ -1,10 +1,10 @@
-export const LEVEL_BUTTONS = [
-  { type: 'default', en: 'Easy Level', zh: '简单难度', path: '/game/easy' },
-  { type: 'primary', en: 'Normal Level', zh: '中等难度', path: '/game/normal' },
-  { type: 'warning', en: 'Master Level', zh: '困难难度', path: '/game/master' },
-  { type: 'danger', en: 'Expert Level', zh: '专家难度', path: '/game/expert' },
-  // { type: 'custom', en: 'Practice Mode', zh: '练习模式', path: '/game/expert' },
-] as const
+export const LEVELS = {
+  easy: { code: 'easy', type: 'default', en: 'Easy Level', zh: '简单难度', path: '/game/easy' },
+  normal: { code: 'normal', type: 'primary', en: 'Normal Level', zh: '中等难度', path: '/game/normal' },
+  master: { code: 'master', type: 'warning', en: 'Master Level', zh: '困难难度', path: '/game/master' },
+  expert: { code: 'expert', type: 'danger', en: 'Expert Level', zh: '专家难度', path: '/game/expert' },
+  // custom: { code: 'custom', type: 'custom', en: 'Practice Mode', zh: '练习模式', path: '/game/expert' },
+} as const
 
 export const LEVEL_GRIDS = {
   easy: {

@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { VARIANT } from '@/config/theme'
+
 const props = defineProps({
   as: {
     type: String as PropType<string | Component>,
@@ -15,14 +17,6 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['click'])
-
-const VARIANT = {
-  default: 'bg-white dark:bg-gray-700',
-  danger: 'bg-red-500 dark:bg-red-500 text-white',
-  warning: 'bg-orange-500 dark:bg-orange-600 text-white',
-  primary: 'bg-emerald-500 dark:bg-emerald-600 text-white',
-  custom: 'bg-violet-500 dark:bg-violet-500 text-white',
-}
 
 function onClick(event: MouseEvent) {
   !props.disabled && emits('click', event)
