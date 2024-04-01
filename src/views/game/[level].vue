@@ -57,6 +57,8 @@ function startGame() {
   resetCountdown()
   startCountdown()
 
+  checkedNumber.value = 0
+  isGamePause.value = false
   isPreviewMode.value = true
   targetBlocks.value = generateRandomTarget(levelConfig)
 
@@ -97,8 +99,6 @@ function onCheckResult() {
   // 如果上一步是选错的
   if (isGamePause.value) {
     startGame()
-    checkedNumber.value = 0
-    isGamePause.value = false
     return
   }
 
@@ -206,19 +206,19 @@ onBeforeUnmount(() => {
         </Transition>
       </div>
 
-      <div class="flex mb-2 justify-between items-center text-lg font-mono">
-        <span class="flex-1">
-          <i class="i-solar-stop-bold text-emerald-500 -mr-2 align-[-2.5px]" />
+      <div class="flex mb-1 justify-between items-center text-lg font-mono">
+        <span class="flex-1 flex items-center">
+          <i class="i-solar-stop-bold text-emerald-500 mr-0.5 align-[-2.5px]" />
           {{ checkedNumber }}/{{ targetBlocks.size }}
         </span>
 
-        <span class="flex-1 text-center">
-          <i class="i-solar-health-bold text-xl text-red-500 -mr-2 align-[-3px]" />
+        <span class="flex-1 flex items-center justify-center">
+          <i class="i-solar-health-bold text-xl text-red-500 mr-0.5 align-[-3px]" />
           {{ gameHealth }}
         </span>
 
-        <span class="flex-1 relation text-right">
-          <i class="i-solar-alarm-add-broken -mr-2 align-[-2.5px]" />
+        <span class="flex-1 flex items-center justify-end relation">
+          <i class="i-solar-alarm-add-broken mr-0.5 align-[-2.5px]" />
           {{ timestamp }}s
         </span>
       </div>
