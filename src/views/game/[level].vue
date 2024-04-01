@@ -15,6 +15,7 @@ const isPreviewMode = shallowRef(true)
 const getScopeVisible = shallowRef(false)
 
 const gameHealth = shallowRef(levelConfig.health)
+const checkedNumber = shallowRef(0)
 
 // 生成随机高亮的块
 const targetBlocks = shallowRef(new Set<string>())
@@ -22,7 +23,7 @@ const targetBlocks = shallowRef(new Set<string>())
 const {
   over: playOver,
   error: playError,
-  success: playSuccess
+  success: playSuccess,
 } = useGameSounds()
 
 const {
@@ -96,6 +97,7 @@ function onCheckResult() {
   // 如果上一步是选错的
   if (isGamePause.value) {
     startGame()
+    checkedNumber.value = 0
     isGamePause.value = false
     return
   }
@@ -108,11 +110,20 @@ function onCheckResult() {
 
     playError()
     gameHealth.value--
-    isGamePause.value = true
+
+    if (gameHealth.value === 0) {
+      gameOver()
+    } else {
+      isGamePause.value = true
+    }
 
     return
   }
 
+  gameOver()
+}
+
+function gameOver() {
   stopTimestamp()
   markAllMissBlocks()
   markAllWrongBlocks()
@@ -132,10 +143,12 @@ function onCheckResult() {
 
 function onResetBlocks() {
   uncheckAllBlocks()
+  checkedNumber.value = 0
 
   if (isGameOver.value) {
     gameScope.value = 0
     isGameOver.value = false
+    gameHealth.value = levelConfig.health
     startGame()
   }
 }
@@ -159,6 +172,11 @@ function generateRandomTarget({ min, max, grid }: typeof LEVEL_GRIDS[Level]) {
   return target
 }
 
+function handleCheckboxChange(e: Event) {
+  const target = e.target as HTMLInputElement
+  checkedNumber.value += target.checked ? 1 : (-1)
+}
+
 onMounted(() => {
   startGame()
 })
@@ -172,7 +190,7 @@ onBeforeUnmount(() => {
   <main class="h-full flex items-center justify-center">
     <div>
       <h2 className="w-full text-xl text-center">
-        {{ isPreviewMode ? '请记住以下方块位置' : '游戏开始' }}
+        {{ isPreviewMode ? '请记住以下方块位置' : isGameOver ? '游戏结束' : '游戏开始' }}
         <span v-if="countdown" class="font-mono">({{ countdown }})</span>
       </h2>
 
@@ -191,7 +209,7 @@ onBeforeUnmount(() => {
       <div class="flex mb-2 justify-between items-center text-lg font-mono">
         <span class="flex-1">
           <i class="i-solar-stop-bold text-emerald-500 -mr-2 align-[-2.5px]" />
-          {{ targetBlocks.size }}
+          {{ checkedNumber }}/{{ targetBlocks.size }}
         </span>
 
         <span class="flex-1 text-center">
@@ -207,7 +225,9 @@ onBeforeUnmount(() => {
 
       <GameGrid
         :config="levelConfig"
+        :is-max="checkedNumber >= targetBlocks.size"
         :class="{ 'pointer-events-none': isPreviewMode || isGameOver || isGamePause }"
+        @change="handleCheckboxChange"
       />
 
       <div class="mt-12 mb-20  gap-4 flex justify-center">
@@ -224,7 +244,7 @@ onBeforeUnmount(() => {
           :type="isGamePause ? 'warning' : 'primary'"
           @click="onCheckResult"
         >
-          {{ isGamePause ? '确认结果' : '确定选择' }}
+          {{ isGamePause ? '继续' : '选好了' }}
         </Button>
       </div>
     </div>
