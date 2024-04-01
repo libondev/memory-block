@@ -6,7 +6,17 @@ defineProps({
     type: Object,
     required: true,
   },
+  isMax: {
+    type: Boolean,
+    default: false,
+  },
 })
+
+const emits = defineEmits<(e: 'change', val: Event) => void>()
+
+function handleChange(e: Event) {
+  emits('change', e)
+}
 </script>
 
 <template>
@@ -15,8 +25,10 @@ defineProps({
       <div v-for="_col, colIndex of config.grid" :key="_col" class="border-inherit border-l p-1">
         <Toggle
           :size="config.size"
+          :is-max="isMax"
           color="text-emerald-500"
           :data-axis="`${rowIndex},${colIndex}`"
+          @change="handleChange"
         />
       </div>
     </div>
