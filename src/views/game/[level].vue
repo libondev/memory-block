@@ -214,7 +214,20 @@ onBeforeUnmount(() => {
 
         <span class="flex-1 flex items-center justify-center">
           <i class="i-solar-health-bold text-xl text-red-500 mr-0.5 align-[-3px]" />
-          {{ gameHealth }}
+          <div class="w-4 h-4 overflow-hidden">
+            <div
+              class="w-4 overflow-hidden transition-transform duration-300 ease-in"
+              :style="`transform: translateY(${-gameHealth}rem)`"
+            >
+              <span
+                v-for="val in [0, 1, 2, 3]"
+                :key="val"
+                class="w-4 h-4 leading-4 text-center block"
+              >
+                {{ val }}
+              </span>
+            </div>
+          </div>
         </span>
 
         <span class="flex-1 flex items-center justify-end relation">
