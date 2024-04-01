@@ -30,7 +30,8 @@ export function useGameScope({ rate: multiplier }: typeof LEVEL_GRIDS[Level]) {
     const finalScopeRate = Math.max(BASIC_GAME_RATE - Math.floor(deltaTime / 5000), 1)
 
     // 计分公式: 方块数量 * 难度倍率 * 时间倍率
-    deltaScope.value = counts * multiplier * finalScopeRate
+    deltaScope.value = Math.round(counts * multiplier * finalScopeRate)
+
     gameScope.value += deltaScope.value
   }
 
