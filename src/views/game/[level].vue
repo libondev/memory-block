@@ -261,7 +261,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <GameGrid
+      <Grid
         :config="levelConfig"
         :is-max="checkedNumber >= targetBlocks.size"
         :class="isPreviewMode || isGameOver || isGamePause ? 'pointer-events-none' : 'playing'"
