@@ -21,6 +21,8 @@ const checkedNumber = shallowRef(0)
 const highestScore = shallowRef(0)
 const showHighestScoreBadge = shallowRef(false)
 
+const gameHealthList = computed(() => Array.from({ length: levelConfig.health + 1 }, (_, i) => i))
+
 // 生成随机高亮的块
 const targetBlocks = shallowRef(new Set<string>())
 
@@ -203,9 +205,9 @@ onBeforeUnmount(() => {
 <template>
   <main class="h-full flex items-center justify-center">
     <div>
-      <h2 className="w-full text-xl text-center">
+      <h2 className="w-full flex items-center justify-center text-xl">
         {{ isPreviewMode ? '请记住以下方块位置' : isGameOver ? '游戏结束' : '游戏开始' }}
-        <span v-if="countdown" class="font-mono">({{ countdown }})</span>
+        <span v-show="countdown" class="font-mono">({{ countdown }})</span>
       </h2>
 
       <div class="my-8 text-[40px] font-mono text-center relative">
@@ -222,27 +224,41 @@ onBeforeUnmount(() => {
         </Transition>
       </div>
 
-      <div class="mt-8 flex justify-between items-center text-lg font-mono">
-        <span class="flex-1 flex items-center">
-          <i class="i-solar-ranking-outline translate-y-[-1.5px] mr-0.5" />
+      <!-- 历史最高分 -->
+      <div class="flex justify-between items-center text-lg font-mono">
+        <span class="flex items-center">
+          <i class="i-solar-ranking-broken translate-y-[-1.5px] mr-0.5" />
           {{ highestScore }}
         </span>
       </div>
 
       <div class="flex mb-1 justify-between items-center text-lg font-mono">
         <span class="flex items-center">
-          <i class="i-solar-stop-bold text-emerald-500 mr-0.5 align-[-2.5px]" />
-          {{ checkedNumber }}<span class="text-sm translate-y-[1.5px]">/{{ targetBlocks.size }}</span>
+          <i class="i-solar-stop-bold text-emerald-500 mr-0.5" />
+          {{ checkedNumber }}<span class="text-sm translate-y-[2px]">/{{ targetBlocks.size }}</span>
         </span>
 
-        <span class="flex-1 flex items-center justify-center relation">
-          <i class="i-solar-alarm-add-broken mr-0.5 align-[-2.5px]" />
+        <span class="flex-1 flex items-center justify-center">
+          <i class="i-solar-alarm-add-broken mr-0.5" />
           {{ timestamp }}s
         </span>
 
-        <span class="flex items-center justify-end">
-          <i class="i-solar-health-bold text-xl text-red-500 mr-0.5 align-[-3px]" />
-          {{ gameHealth }}
+        <span class="flex items-center">
+          <i class="i-solar-health-bold text-xl text-red-500 mr-0.5" />
+          <div class="w-4 h-4 overflow-hidden">
+            <div
+              class="w-4 transition-transform duration-300 ease-in translate-y-[var(--ty)]"
+              :style="`--ty: ${-gameHealth}rem`"
+            >
+              <span
+                v-for="val of gameHealthList"
+                :key="val"
+                class="size-4 leading-none text-center block"
+              >
+                {{ val }}
+              </span>
+            </div>
+          </div>
         </span>
       </div>
 
@@ -265,6 +281,7 @@ onBeforeUnmount(() => {
           v-show="!isGameOver"
           :disabled="isPreviewMode"
           :type="isGamePause ? 'warning' : 'primary'"
+          class="w-[70px]"
           @click="onCheckResult"
         >
           {{ isGamePause ? '继续' : '选好了' }}
