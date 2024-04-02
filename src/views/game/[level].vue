@@ -265,7 +265,7 @@ onBeforeUnmount(() => {
       <GameGrid
         :config="levelConfig"
         :is-max="checkedNumber >= targetBlocks.size"
-        :class="{ 'pointer-events-none': isPreviewMode || isGameOver || isGamePause }"
+        :class="isPreviewMode || isGameOver || isGamePause ? 'pointer-events-none' : 'playing'"
         @change="handleCheckboxChange"
       />
 
@@ -291,7 +291,7 @@ onBeforeUnmount(() => {
   </main>
 </template>
 
-<style scoped>
+<style>
 .increase-scope-enter-active,
 .increase-scope-leave-active {
   transition: all 0.5s ease;

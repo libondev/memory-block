@@ -1,18 +1,17 @@
 <script lang="ts" setup>
 import Toggle from '@/components/Toggle.vue'
 
-defineProps({
+defineProps<{
+  isMax: boolean
   config: {
-    type: Object,
-    required: true,
-  },
-  isMax: {
-    type: Boolean,
-    default: false,
-  },
-})
+    size: string
+    grid: number
+  }
+}>()
 
-const emits = defineEmits<(e: 'change', val: Event) => void>()
+const emits = defineEmits<
+  (e: 'change', val: Event) => void
+>()
 
 function handleChange(e: Event) {
   emits('change', e)

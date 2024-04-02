@@ -2,12 +2,14 @@
 import { LEVELS, type Level } from '@/config/game'
 import { COLORS } from '@/config/theme.ts'
 
-defineProps({
-  level: {
-    type: String as PropType<Level>,
-    default: 'easy',
+withDefaults(
+  defineProps<{
+    level: Level
+  }>(),
+  {
+    level: 'easy',
   },
-})
+)
 </script>
 
 <template>

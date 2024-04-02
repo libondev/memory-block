@@ -4,7 +4,7 @@ import { gameSoundsInjectionKey } from '@/composables/use-game-sounds'
 
 const {
   enableSounds,
-  toggleSounds
+  toggleSounds,
 } = inject(gameSoundsInjectionKey)!
 </script>
 

@@ -1,20 +1,18 @@
 <script lang="ts" setup>
 import { VARIANT } from '@/config/theme'
 
-const props = defineProps({
-  as: {
-    type: String as PropType<string | Component>,
-    default: 'button',
+const props = withDefaults(
+  defineProps<{
+    as: string | Component
+    type: keyof typeof VARIANT
+    disabled: boolean
+  }>(),
+  {
+    as: 'button',
+    type: 'default',
+    disabled: false,
   },
-  type: {
-    type: String as PropType<keyof typeof VARIANT>,
-    default: 'default',
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-})
+)
 
 const emits = defineEmits(['click'])
 
