@@ -8,10 +8,10 @@ const {
 </script>
 
 <template>
-  <header class="mb-4 px-6 border-b dark:border-gray-700 flex items-center justify-between">
+  <header class="mb-4 px-4 sm:px-6 border-b dark:border-gray-700 flex items-center justify-between">
     <h1 class="text-lg font-medium">
-      <RouterLink to="/">
-        Memory Block<span class="hidden sm:inline">（记忆方块）</span>
+      <RouterLink to="/" class="sm:after:content-[attr(data-text)]" data-text="（记忆方块）">
+        Memory Block
       </RouterLink>
     </h1>
 
