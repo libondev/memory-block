@@ -1,19 +1,40 @@
 <script lang="ts" setup>
 import confetti from 'canvas-confetti'
 
-import { LEVEL_GRIDS, type Level } from '@/config/game'
+import { type GameLevel, LEVEL_GRIDS } from '@/config/game'
 
-import { useGameScope } from '@/composables/use-game-scope'
+import { useGameScore } from '@/composables/use-game-score'
 import { useCheckedBlocks } from '@/composables/use-checked-blocks'
 import { getHighestScoreInHistory, setHighestScoreInHistory } from '@/composables/use-local-cache'
 
-const level = useRoute().params.level as Level || 'easy'
-const levelConfig = LEVEL_GRIDS[level] || LEVEL_GRIDS.easy
+const { level, levelConfig } = (() => {
+  // 获取当前游戏配置
+  const level = useRoute().params.level as GameLevel || 'easy'
+  const levelConfig = LEVEL_GRIDS[level] || LEVEL_GRIDS.easy
 
-const isGameOver = shallowRef(false)
-const isGamePause = shallowRef(false)
-const isPreviewMode = shallowRef(true)
-const getScopeVisible = shallowRef(false)
+  return {
+    level,
+    levelConfig,
+  }
+})()
+
+type GameStatus = 'over' | 'pause' | 'playing' | 'previewing'
+
+const _gameState = shallowRef<GameStatus>('previewing')
+
+const gameStatus = computed(() => ({
+  over: _gameState.value === 'over',
+  pause: _gameState.value === 'pause',
+  playing: _gameState.value === 'playing',
+  previewing: _gameState.value === 'previewing',
+}))
+
+// 更新游戏内部状态
+function setGameStatus(status: GameStatus) {
+  _gameState.value = status
+}
+
+const getScoreVisible = shallowRef(false)
 
 const gameHealth = shallowRef(levelConfig.health)
 const checkedNumber = shallowRef(0)
@@ -35,12 +56,12 @@ const {
 
 const {
   timestamp,
-  gameScope,
-  deltaScope,
-  startScoring,
-  setGameScope,
-  stopTimestamp,
-} = useGameScope(levelConfig)
+  gameScore,
+  deltaScore,
+  setGameScore,
+  stopRecording,
+  startRecording,
+} = useGameScore(levelConfig)
 
 const {
   uncheckAllBlocks,
@@ -61,16 +82,14 @@ const {
 let startTimeoutId = -1
 
 async function startGame() {
-  resetCountdown()
-  startCountdown()
-
   checkedNumber.value = 0
-  isGamePause.value = false
-  isPreviewMode.value = true
   showHighestScoreBadge.value = false
   targetBlocks.value = generateRandomTarget(levelConfig)
   // 获取历史最高分
   highestScore.value = await getHighestScoreInHistory(level) || 0
+
+  resetCountdown()
+  startCountdown()
 
   // 重置所有错误块的选中
   uncheckAllBlocks()
@@ -78,13 +97,16 @@ async function startGame() {
   uncheckWrongBlocks()
   checkedTargetBlock()
 
+  // 设置游戏状态为预览模式
+  setGameStatus('previewing')
+
   clearTimeout(startTimeoutId)
   // 延迟关闭预览模式
   startTimeoutId = window.setTimeout(() => {
-    // 开始计时计分
-    startScoring()
+    // 开始计分计时
+    startRecording()
     uncheckAllBlocks()
-    isPreviewMode.value = false
+    setGameStatus('playing')
   }, levelConfig.internal * 1000)
 }
 
@@ -98,8 +120,8 @@ function onCheckResult() {
 
   // 如果匹配成功
   if (matched) {
-    getScopeVisible.value = true
-    setGameScope(targetBlocks.value.size)
+    getScoreVisible.value = true
+    setGameScore(targetBlocks.value.size)
     startGame()
     playSuccessSound()
 
@@ -107,14 +129,14 @@ function onCheckResult() {
   }
 
   // 如果上一步是选错的
-  if (isGamePause.value) {
+  if (gameStatus.value.pause) {
     startGame()
     return
   }
 
   // 如果还有生命值
   if (gameHealth.value > 0) {
-    stopTimestamp()
+    stopRecording()
     markAllMissBlocks()
     markAllWrongBlocks()
 
@@ -124,7 +146,7 @@ function onCheckResult() {
     if (gameHealth.value === 0) {
       gameOver()
     } else {
-      isGamePause.value = true
+      setGameStatus('pause')
     }
 
     return
@@ -134,36 +156,31 @@ function onCheckResult() {
 }
 
 function gameOver() {
-  stopTimestamp()
+  stopRecording()
   playFailSound()
   markAllMissBlocks()
   markAllWrongBlocks()
+  setGameStatus('over')
+
   useToastError('游戏结束')
-  isGameOver.value = true
 
   // 如果分数比历史最高分高, 更新历史最高分, 并播放纸屑
-  if (gameScope.value > highestScore.value) {
-    highestScore.value = gameScope.value
+  if (gameScore.value > highestScore.value) {
+    highestScore.value = gameScore.value
     showHighestScoreBadge.value = true
 
     playOverSound()
     confetti({ spread: 120, particleCount: 300 })
-    setHighestScoreInHistory(level, gameScope.value)
+    setHighestScoreInHistory(level, gameScore.value)
   }
-
-  // 有分数才生成纸屑, 否则会有点嘲笑 0 分的意思:)
-  // 游戏结束时, 分数越高, 生成越多的纸屑
-  // if (gameScope.value > 0) {
-  // }
 }
 
 function onResetBlocks() {
   uncheckAllBlocks()
   checkedNumber.value = 0
 
-  if (isGameOver.value) {
-    gameScope.value = 0
-    isGameOver.value = false
+  if (gameStatus.value.over) {
+    gameScore.value = 0
     gameHealth.value = levelConfig.health
     startGame()
   }
@@ -171,10 +188,10 @@ function onResetBlocks() {
 
 // 动画结束后隐藏
 function onAnimationend() {
-  getScopeVisible.value = false
+  getScoreVisible.value = false
 }
 
-function generateRandomTarget({ min, max, grid }: typeof LEVEL_GRIDS[Level]) {
+function generateRandomTarget({ min, max, grid }: typeof LEVEL_GRIDS[GameLevel]) {
   const target = new Set<string>()
   const count = Math.floor(Math.random() * (max - min + 1)) + min
 
@@ -205,9 +222,10 @@ onBeforeUnmount(() => {
 <template>
   <main class="h-full flex items-center justify-center">
     <div>
-      <h2 className="w-full flex items-center justify-center text-xl">
-        {{ isPreviewMode ? '请记住以下方块位置' : isGameOver ? '游戏结束' : '游戏开始' }}
-        <span v-show="countdown" class="font-mono">({{ countdown }})</span>
+      <h2 className="w-full flex items-center justify-center text-xl font-mono">
+        {{ gameStatus.previewing ? '请记住以下方块位置' : gameStatus.over ? '游戏结束' : '游戏开始' }}<template v-if="countdown">
+          ({{ countdown }})
+        </template>
       </h2>
 
       <div class="my-6 font-mono flex items-center w-60">
@@ -247,16 +265,16 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="relative flex-1 text-[40px] text-right">
-          <span class="z-10 font-medium">{{ gameScope }}</span>
+          <span class="z-10 font-medium">{{ gameScore }}</span>
 
           <span v-if="showHighestScoreBadge" class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500">BEST</span>
 
-          <Transition name="increase-scope">
+          <Transition name="increase-score">
             <span
-              v-show="getScopeVisible"
+              v-show="getScoreVisible"
               class="absolute text-[60%] text-emerald-500 duration-500 animate-in fade-in slide-in-from-bottom"
               @animationend="onAnimationend"
-            >+{{ deltaScope }}</span>
+            >+{{ deltaScore }}</span>
           </Transition>
         </div>
       </div>
@@ -264,26 +282,26 @@ onBeforeUnmount(() => {
       <Grid
         :config="levelConfig"
         :is-max="checkedNumber >= targetBlocks.size"
-        :class="isPreviewMode || isGameOver || isGamePause ? 'pointer-events-none' : 'playing'"
+        :class="gameStatus.playing ? 'playing' : 'pointer-events-none'"
         @change="handleCheckboxChange"
       />
 
       <div class="mt-12 mb-20  gap-4 flex justify-center">
         <Button
-          :disabled="isPreviewMode || isGamePause"
+          :disabled="gameStatus.previewing || gameStatus.pause"
           @click="onResetBlocks"
         >
-          {{ isGameOver ? '再来一次' : '清空选中' }}
+          {{ gameStatus.over ? '再来一次' : '清空选中' }}
         </Button>
 
         <Button
-          v-show="!isGameOver"
-          :disabled="isPreviewMode"
-          :type="isGamePause ? 'warning' : 'primary'"
+          v-show="!gameStatus.over"
+          :disabled="gameStatus.previewing"
+          :type="gameStatus.pause ? 'warning' : 'primary'"
           class="w-[70px]"
           @click="onCheckResult"
         >
-          {{ isGamePause ? '继续' : '选好了' }}
+          {{ gameStatus.pause ? '继续' : '选好了' }}
         </Button>
       </div>
     </div>
@@ -291,13 +309,13 @@ onBeforeUnmount(() => {
 </template>
 
 <style>
-.increase-scope-enter-active,
-.increase-scope-leave-active {
+.increase-score-enter-active,
+.increase-score-leave-active {
   transition: all 0.5s ease;
 }
 
-.increase-scope-enter-from,
-.increase-scope-leave-to {
+.increase-score-enter-from,
+.increase-score-leave-to {
   opacity: 0;
 }
 </style>

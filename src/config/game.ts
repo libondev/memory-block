@@ -1,4 +1,4 @@
-export const LEVELS = {
+export const GAME_LEVELS = {
   easy: { code: 'easy', type: 'default', en: 'Easy Level', zh: '简单难度', path: '/game/easy' },
   normal: { code: 'normal', type: 'primary', en: 'Normal Level', zh: '中等难度', path: '/game/normal' },
   master: { code: 'master', type: 'warning', en: 'Master Level', zh: '困难难度', path: '/game/master' },
@@ -48,4 +48,6 @@ export const LEVEL_GRIDS = {
   },
 } as const
 
-export type Level = keyof typeof LEVEL_GRIDS
+export type GameLevel = {
+  [K in keyof typeof GAME_LEVELS]: typeof GAME_LEVELS[K]['code'];
+}[keyof typeof GAME_LEVELS]
