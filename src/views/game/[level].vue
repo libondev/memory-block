@@ -25,6 +25,7 @@ const showHighestScoreBadge = shallowRef(false)
 const targetBlocks = shallowRef(new Set<string>())
 
 const {
+  fail: playFailSound,
   over: playOverSound,
   error: playErrorSound,
   success: playSuccessSound,
@@ -132,7 +133,7 @@ function onCheckResult() {
 
 function gameOver() {
   stopTimestamp()
-  playOverSound()
+  playFailSound()
   markAllMissBlocks()
   markAllWrongBlocks()
   useToastError('游戏结束')
@@ -142,6 +143,8 @@ function gameOver() {
   if (gameScope.value > highestScore.value) {
     highestScore.value = gameScope.value
     showHighestScoreBadge.value = true
+
+    playOverSound()
     confetti({ spread: 120, particleCount: 300 })
     setHighestScoreInHistory(level, gameScope.value)
   }

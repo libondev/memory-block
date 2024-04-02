@@ -5,6 +5,7 @@ interface GameSounds {
   enableSounds: Ref<boolean>
   toggleSounds: () => void
   sounds: {
+    fail: HTMLAudioElement
     over: HTMLAudioElement
     error: HTMLAudioElement
     // choose: HTMLAudioElement
@@ -19,6 +20,7 @@ export function provideGameSounds() {
   const toggleSounds = useToggle(enableSounds)
 
   const sounds = {
+    fail: new Audio(new URL('/fail.mp3', import.meta.url).href),
     over: new Audio(new URL('/over.mp3', import.meta.url).href),
     error: new Audio(new URL('/error.mp3', import.meta.url).href),
     // choose: new Audio(new URL('/choose.mp3', import.meta.url).href),
@@ -44,6 +46,14 @@ export function useGameSounds() {
     //   audio.src = new URL('/choose.mp3', import.meta.url).href
     //   audio.play()
     // },
+
+    fail: () => {
+      if (!enableSounds.value) {
+        return
+      }
+
+      sounds.fail.play()
+    },
 
     success: () => {
       if (!enableSounds.value) {
