@@ -5,6 +5,7 @@ import { LEVEL_GRIDS, type Level } from '@/config/game'
 
 import { useGameScope } from '@/composables/use-game-scope'
 import { useCheckedBlocks } from '@/composables/use-checked-blocks'
+import { getHighestScoreInHistory, setHighestScoreInHistory } from '@/composables/use-local-cache'
 
 const level = useRoute().params.level as Level || 'easy'
 const levelConfig = LEVEL_GRIDS[level] || LEVEL_GRIDS.easy
@@ -17,15 +18,19 @@ const getScopeVisible = shallowRef(false)
 const gameHealth = shallowRef(levelConfig.health)
 const checkedNumber = shallowRef(0)
 
+const highestScore = shallowRef(0)
+const showHighestScoreBadge = shallowRef(false)
+
 const gameHealthList = computed(() => Array.from({ length: levelConfig.health + 1 }, (_, i) => i))
 
 // 生成随机高亮的块
 const targetBlocks = shallowRef(new Set<string>())
 
 const {
-  over: playOver,
-  error: playError,
-  success: playSuccess,
+  fail: playFailSound,
+  over: playOverSound,
+  error: playErrorSound,
+  success: playSuccessSound,
 } = useGameSounds()
 
 const {
@@ -55,14 +60,17 @@ const {
 
 let startTimeoutId = -1
 
-function startGame() {
+async function startGame() {
   resetCountdown()
   startCountdown()
 
   checkedNumber.value = 0
   isGamePause.value = false
   isPreviewMode.value = true
+  showHighestScoreBadge.value = false
   targetBlocks.value = generateRandomTarget(levelConfig)
+  // 获取历史最高分
+  highestScore.value = await getHighestScoreInHistory(level) || 0
 
   // 重置所有错误块的选中
   uncheckAllBlocks()
@@ -93,7 +101,7 @@ function onCheckResult() {
     getScopeVisible.value = true
     setGameScope(targetBlocks.value.size)
     startGame()
-    playSuccess()
+    playSuccessSound()
 
     return
   }
@@ -110,7 +118,7 @@ function onCheckResult() {
     markAllMissBlocks()
     markAllWrongBlocks()
 
-    playError()
+    playErrorSound()
     gameHealth.value--
 
     if (gameHealth.value === 0) {
@@ -127,20 +135,26 @@ function onCheckResult() {
 
 function gameOver() {
   stopTimestamp()
+  playFailSound()
   markAllMissBlocks()
   markAllWrongBlocks()
   useToastError('游戏结束')
   isGameOver.value = true
-  playOver()
+
+  // 如果分数比历史最高分高, 更新历史最高分, 并播放纸屑
+  if (gameScope.value > highestScore.value) {
+    highestScore.value = gameScope.value
+    showHighestScoreBadge.value = true
+
+    playOverSound()
+    confetti({ spread: 120, particleCount: 300 })
+    setHighestScoreInHistory(level, gameScope.value)
+  }
 
   // 有分数才生成纸屑, 否则会有点嘲笑 0 分的意思:)
   // 游戏结束时, 分数越高, 生成越多的纸屑
-  if (gameScope.value > 0) {
-    confetti({
-      // 根据分数生成纸屑数量
-      particleCount: Math.max(gameScope.value, 100),
-    })
-  }
+  // if (gameScope.value > 0) {
+  // }
 }
 
 function onResetBlocks() {
@@ -196,8 +210,10 @@ onBeforeUnmount(() => {
         <span v-show="countdown" class="font-mono">({{ countdown }})</span>
       </h2>
 
-      <div class="my-8 text-[40px] font-mono text-center">
-        {{ gameScope }}
+      <div class="my-8 text-[40px] font-mono text-center relative">
+        <span class="z-10 relative font-medium">{{ gameScope }}</span>
+
+        <span v-if="showHighestScoreBadge" class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500">BEST</span>
 
         <Transition name="increase-scope">
           <span
@@ -208,13 +224,26 @@ onBeforeUnmount(() => {
         </Transition>
       </div>
 
+      <!-- 历史最高分 -->
+      <div class="flex justify-between items-center text-lg font-mono">
+        <span class="flex items-center">
+          <i class="i-solar-ranking-broken translate-y-[-1.5px] mr-0.5" />
+          {{ highestScore }}
+        </span>
+      </div>
+
       <div class="flex mb-1 justify-between items-center text-lg font-mono">
-        <span class="flex-1 flex items-center">
+        <span class="flex items-center">
           <i class="i-solar-stop-bold text-emerald-500 mr-0.5" />
-          {{ checkedNumber }}/{{ targetBlocks.size }}
+          {{ checkedNumber }}<span class="text-sm translate-y-[2px]">/{{ targetBlocks.size }}</span>
         </span>
 
         <span class="flex-1 flex items-center justify-center">
+          <i class="i-solar-alarm-add-broken mr-0.5" />
+          {{ timestamp }}s
+        </span>
+
+        <span class="flex items-center">
           <i class="i-solar-health-bold text-xl text-red-500 mr-0.5" />
           <div class="w-4 h-4 overflow-hidden">
             <div
@@ -230,11 +259,6 @@ onBeforeUnmount(() => {
               </span>
             </div>
           </div>
-        </span>
-
-        <span class="flex-1 flex items-center justify-end relation">
-          <i class="i-solar-alarm-add-broken mr-0.5" />
-          {{ timestamp }}s
         </span>
       </div>
 

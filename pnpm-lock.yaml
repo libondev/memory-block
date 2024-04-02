@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@headlessui/vue':
+    specifier: ^1.7.19
+    version: 1.7.19(vue@3.4.21)
   '@vueuse/core':
     specifier: ^10.9.0
     version: 10.9.0(vue@3.4.21)
@@ -829,6 +832,16 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
 
+  /@headlessui/vue@1.7.19(vue@3.4.21):
+    resolution: {integrity: sha512-VFjKPybogux/5/QYGSq4zgG/x3RcxId15W8uguAJAjPBxelI23dwjOjTx/mIiMkM/Hd3rzFxcf2aIp56eEWRcA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      '@tanstack/vue-virtual': 3.2.0(vue@3.4.21)
+      vue: 3.4.21(typescript@5.4.2)
+    dev: false
+
   /@humanwhocodes/config-array@0.11.14:
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
     engines: {node: '>=10.10.0'}
@@ -1129,6 +1142,19 @@ packages:
       - supports-color
       - typescript
     dev: true
+
+  /@tanstack/virtual-core@3.2.0:
+    resolution: {integrity: sha512-P5XgYoAw/vfW65byBbJQCw+cagdXDT/qH6wmABiLt4v4YBT2q2vqCOhihe+D1Nt325F/S/0Tkv6C5z0Lv+VBQQ==}
+    dev: false
+
+  /@tanstack/vue-virtual@3.2.0(vue@3.4.21):
+    resolution: {integrity: sha512-KbmQVvw1k5Js2Fk4DJw9aDxFT5+e8a2Ba4UBJAFCRnWBCnzd3NlmEHI9JCeLv1tYDZ/iHwwv+Z9Le0BENIEP8A==}
+    peerDependencies:
+      vue: ^2.7.0 || ^3.0.0
+    dependencies:
+      '@tanstack/virtual-core': 3.2.0
+      vue: 3.4.21(typescript@5.4.2)
+    dev: false
 
   /@types/canvas-confetti@1.6.4:
     resolution: {integrity: sha512-fNyZ/Fdw/Y92X0vv7B+BD6ysHL4xVU5dJcgzgxLdGbn8O3PezZNIJpml44lKM0nsGur+o/6+NZbZeNTt00U1uA==}

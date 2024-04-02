@@ -17,6 +17,18 @@ export interface RecordItem {
 
 export const RECORD_KEY = 'record'
 
+const HIGHEST_SCORE_KEY = 'highestScore.'
+
+// 获取最高分
+export function getHighestScoreInHistory(level: Level) {
+  return localforage.getItem<number>(HIGHEST_SCORE_KEY + level, v => v ?? 0)
+}
+
+// 设置最高分
+export function setHighestScoreInHistory(level: Level, scope: number) {
+  localforage.setItem(HIGHEST_SCORE_KEY + level, scope)
+}
+
 export function appendRecordToStore(record: RecordItem) {
   localforage.setItem(record.startTime, record)
 }
