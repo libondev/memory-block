@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import ToggleMode from './ToggleMode.vue'
 import { gameSoundsInjectionKey } from '@/composables/use-game-sounds'
 
 const {
@@ -9,10 +8,10 @@ const {
 </script>
 
 <template>
-  <header class="mb-4 px-6 border-b dark:border-gray-700 flex items-center justify-between">
+  <header class="mb-4 px-4 sm:px-6 border-b dark:border-gray-700 flex items-center justify-between">
     <h1 class="text-lg font-medium">
-      <RouterLink to="/">
-        Memory Block（记忆方块）
+      <RouterLink to="/" class="sm:after:content-[attr(data-text)]" data-text="（记忆方块）">
+        Memory Block
       </RouterLink>
     </h1>
 
@@ -25,7 +24,7 @@ const {
         <i class="block i-solar-calendar-bold" />
       </Button> -->
 
-      <ToggleMode />
+      <ToggleDark />
 
       <Button as="a" href="https://github.com/libondev/memory-block" target="_project">
         <i class="block i-carbon-logo-github" />
