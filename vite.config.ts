@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => ({
   },
 
   optimizeDeps: {
-    include: ['vue', 'pinia', 'vue-router', 'ts-pattern'],
+    include: ['vue', 'pinia', 'vue-router', 'canvas-confetti', 'localforage'],
     exclude: ['vue-demi'],
   },
 
