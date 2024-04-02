@@ -210,56 +210,55 @@ onBeforeUnmount(() => {
         <span v-show="countdown" class="font-mono">({{ countdown }})</span>
       </h2>
 
-      <div class="my-8 text-[40px] font-mono text-center relative">
-        <span class="z-10 relative font-medium">{{ gameScope }}</span>
+      <div class="my-6 font-mono flex items-center w-60">
+        <div class="flex flex-col text-lg w-24 min-w-20">
+          <span class="flex items-center">
+            <i class="i-solar-ranking-broken translate-y-[-1.5px] mr-0.5" />
+            {{ highestScore }}
+          </span>
 
-        <span v-if="showHighestScoreBadge" class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500">BEST</span>
+          <span class="flex items-center">
+            <i class="i-solar-stop-bold text-emerald-500 mr-0.5" />
+            {{ checkedNumber }}/{{ targetBlocks.size }}
+          </span>
 
-        <Transition name="increase-scope">
-          <span
-            v-show="getScopeVisible"
-            class="absolute text-[60%] text-emerald-500 duration-500 animate-in fade-in slide-in-from-bottom"
-            @animationend="onAnimationend"
-          >+{{ deltaScope }}</span>
-        </Transition>
-      </div>
+          <span class="flex items-center">
+            <i class="i-solar-alarm-add-broken mr-0.5" />
+            {{ timestamp }}s
+          </span>
 
-      <!-- 历史最高分 -->
-      <div class="flex justify-between items-center text-lg font-mono">
-        <span class="flex items-center">
-          <i class="i-solar-ranking-broken translate-y-[-1.5px] mr-0.5" />
-          {{ highestScore }}
-        </span>
-      </div>
-
-      <div class="flex mb-1 justify-between items-center text-lg font-mono">
-        <span class="flex items-center">
-          <i class="i-solar-stop-bold text-emerald-500 mr-0.5" />
-          {{ checkedNumber }}<span class="text-sm translate-y-[2px]">/{{ targetBlocks.size }}</span>
-        </span>
-
-        <span class="flex-1 flex items-center justify-center">
-          <i class="i-solar-alarm-add-broken mr-0.5" />
-          {{ timestamp }}s
-        </span>
-
-        <span class="flex items-center">
-          <i class="i-solar-health-bold text-xl text-red-500 mr-0.5" />
-          <div class="w-4 h-4 overflow-hidden">
-            <div
-              class="w-4 transition-transform duration-300 ease-in translate-y-[var(--ty)]"
-              :style="`--ty: ${-gameHealth}rem`"
-            >
-              <span
-                v-for="val of gameHealthList"
-                :key="val"
-                class="size-4 leading-none text-center block"
+          <span class="flex items-center">
+            <i class="i-solar-health-bold text-red-500" />
+            <div class="w-4 h-4 overflow-hidden">
+              <div
+                class="w-4 transition-transform duration-300 ease-in translate-y-[var(--ty)]"
+                :style="`--ty: ${-gameHealth}rem`"
               >
-                {{ val }}
-              </span>
+                <span
+                  v-for="val of gameHealthList"
+                  :key="val"
+                  class="size-4 leading-none text-center block"
+                >
+                  {{ val }}
+                </span>
+              </div>
             </div>
-          </div>
-        </span>
+          </span>
+        </div>
+
+        <div class="relative flex-1 text-[40px] text-right">
+          <span class="z-10 font-medium">{{ gameScope }}</span>
+
+          <span v-if="showHighestScoreBadge" class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500">BEST</span>
+
+          <Transition name="increase-scope">
+            <span
+              v-show="getScopeVisible"
+              class="absolute text-[60%] text-emerald-500 duration-500 animate-in fade-in slide-in-from-bottom"
+              @animationend="onAnimationend"
+            >+{{ deltaScope }}</span>
+          </Transition>
+        </div>
       </div>
 
       <GameGrid
