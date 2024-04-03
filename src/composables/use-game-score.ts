@@ -1,16 +1,20 @@
 import type { GameLevel, LEVEL_GRIDS } from '@/config/game'
 
-export function useGameScore({ rate: multiplier }: typeof LEVEL_GRIDS[GameLevel]) {
+export function useGameScore(
+  { rate: multiplier }: typeof LEVEL_GRIDS[GameLevel],
+  blocks: Ref<Set<string>>,
+) {
   const BASIC_GAME_RATE = 10
 
   const timestamp = shallowRef(0)
   const gameScore = shallowRef(0)
   const deltaScore = shallowRef(0)
+  const showDeltaScore = shallowRef(false)
 
   let lastTimestamp = 0
   let timestampId = -1
 
-  function setGameScore(counts: number) {
+  function setGameScore() {
     stopRecording()
     const deltaTime = performance.now() - lastTimestamp
 
@@ -18,9 +22,11 @@ export function useGameScore({ rate: multiplier }: typeof LEVEL_GRIDS[GameLevel]
     const timeScoreRate = Math.max(BASIC_GAME_RATE - Math.floor(deltaTime / 5000), 1)
 
     // 计分公式: 方块数量 * 难度倍率 * 时间倍率
-    deltaScore.value = Math.round(counts * multiplier * timeScoreRate)
+    deltaScore.value = Math.round(blocks.value.size * multiplier * timeScoreRate)
 
     gameScore.value += deltaScore.value
+
+    showDeltaScore.value = true
   }
 
   /**
@@ -28,6 +34,8 @@ export function useGameScore({ rate: multiplier }: typeof LEVEL_GRIDS[GameLevel]
    * @param lastTime 上次记录的时间, 用于恢复
    */
   function startRecording(lastTime: number = 0) {
+    showDeltaScore.value = false
+
     timestamp.value = lastTime
     lastTimestamp = performance.now()
 
@@ -38,6 +46,10 @@ export function useGameScore({ rate: multiplier }: typeof LEVEL_GRIDS[GameLevel]
 
   function stopRecording() {
     clearInterval(timestampId)
+  }
+
+  function onEndHideDeltaScore() {
+    showDeltaScore.value = false
   }
 
   // 当页面不可见时停止计时
@@ -61,8 +73,10 @@ export function useGameScore({ rate: multiplier }: typeof LEVEL_GRIDS[GameLevel]
     timestamp,
     gameScore,
     deltaScore,
+    showDeltaScore,
     setGameScore,
     stopRecording,
     startRecording,
+    onEndHideDeltaScore,
   }
 }
