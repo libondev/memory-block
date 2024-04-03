@@ -41,14 +41,17 @@ export function useGameStatus() {
   const showHighestScoreBadge = shallowRef(false)
 
   // 更新历史最高分状态
-  async function updateHighestScoreStatus() {
+  function updateHighestScoreStatus() {
     showHighestScoreBadge.value = false
+
+    getHighestScoreInHistory(level).then((v) => {
     // 更新历史最高分
-    highestScore.value = await getHighestScoreInHistory(level) || 0
+      highestScore.value = v || 0
+    })
   }
 
   // 生成目标方块
-  async function generateRandomTargetBlock() {
+  function generateRandomTargetBlock() {
     const { min, max, grid } = levelConfig
 
     const target = new Set<string>()
