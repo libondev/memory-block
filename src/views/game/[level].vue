@@ -179,6 +179,13 @@ function onCheckboxChange(e: Event) {
   setCheckedNumber(checkedNumber.value += (target.checked ? 1 : -1))
 }
 
+// 千分位格式化分数
+function formatScore(score: number) {
+  const numStr = score.toString()
+  const reg = /\B(?=(\d{3})+(?!\d))/g
+  return numStr.replace(reg, ',')
+}
+
 onMounted(() => {
   startGame()
 })
@@ -197,55 +204,56 @@ onBeforeUnmount(() => {
         </template>
       </h2>
 
-      <div class="my-6 font-mono flex items-center w-60">
-        <div class="flex flex-col text-lg w-24 min-w-20">
-          <div class="flex items-center">
-            <i class="i-solar-ranking-broken translate-y-[-1.5px] mr-0.5" />
-            {{ highestScore }}
-          </div>
+      <div class="mt-6 font-mono flex items-center justify-between leading-none gap-4 min-w-60">
+        <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
+          <i class="i-solar-stop-bold text-lg mr-1 text-emerald-500" />
+          <span class="flex-1 text-center">{{ checkedNumber }}/{{ targetBlocks.size }}</span>
+        </div>
 
-          <div class="flex items-center">
-            <i class="i-solar-stop-bold text-emerald-500 mr-0.5" />
-            {{ checkedNumber }}/{{ targetBlocks.size }}
-          </div>
+        <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
+          <i class="i-solar-clock-circle-bold-duotone text-lg mr-1 opacity-70" />
+          <span class="flex-1 text-center">{{ timestamp }}s</span>
+        </div>
 
-          <div class="flex items-center">
-            <i class="i-solar-alarm-add-broken mr-0.5" />
-            {{ timestamp }}s
-          </div>
-
-          <div class="flex items-center">
-            <i class="i-solar-health-bold text-red-500" />
-            <div class="w-4 h-4 overflow-hidden">
-              <div
-                class="w-4 transition-transform duration-300 ease-in translate-y-[var(--ty)]"
-                :style="`--ty: ${-gameHealth}rem`"
+        <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800">
+          <i class="i-solar-health-bold text-lg mr-1 text-red-500" />
+          <div v-if="gameHealth <= 5" class="w-4 h-4 mx-auto overflow-hidden">
+            <div
+              class="w-4 transition-transform duration-300 ease-in translate-y-[var(--ty)]"
+              :style="`--ty: ${-gameHealth}rem`"
+            >
+              <span
+                v-for="val of gameHealthList"
+                :key="val"
+                class="size-4 leading-none text-center block"
               >
-                <span
-                  v-for="val of gameHealthList"
-                  :key="val"
-                  class="size-4 leading-none text-center block"
-                >
-                  {{ val }}
-                </span>
-              </div>
+                {{ val }}
+              </span>
             </div>
           </div>
+          <span v-else class="flex-1 text-center">{{ gameHealth >= 99 ? '99+' : gameHealth }}</span>
         </div>
+      </div>
 
-        <div class="relative flex-1 text-[40px] text-right">
-          <span class="z-10 font-medium">{{ gameScore }}</span>
-
-          <span v-if="showHighestScoreBadge" class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500">BEST</span>
-
-          <Transition name="increase-score">
-            <span
-              v-show="showDeltaScore"
-              class="absolute text-[60%] text-emerald-500 duration-500 animate-in fade-in slide-in-from-bottom"
-              @animationend="onEndHideDeltaScore"
-            >+{{ deltaScore }}</span>
-          </Transition>
+      <div class="mt-2 font-mono flex items-center justify-between leading-none gap-4 w-60">
+        <div v-if="level !== 'custom'" class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
+          <i class="i-solar-ranking-bold-duotone text-lg translate-y-[-1.5px] mr-1 opacity-70" />
+          <span class="flex-1 text-center">{{ highestScore }}</span>
         </div>
+      </div>
+
+      <div class="relative mb-4 text-4xl text-center">
+        <span class="z-10 font-medium">{{ formatScore(gameScore) }}</span>
+
+        <span v-if="showHighestScoreBadge" class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500">BEST</span>
+
+        <Transition name="increase-score">
+          <span
+            v-show="showDeltaScore"
+            class="absolute text-[60%] text-emerald-500 duration-500 animate-in fade-in slide-in-from-bottom"
+            @animationend="onEndHideDeltaScore"
+          >+{{ deltaScore }}</span>
+        </Transition>
       </div>
 
       <Grid
@@ -267,7 +275,7 @@ onBeforeUnmount(() => {
           v-show="!gameStatus.over"
           :disabled="gameStatus.previewing"
           :type="gameStatus.pause ? 'warning' : 'primary'"
-          class="w-[70px]"
+          class="w-[72px]"
           @click="onCheckResult"
         >
           {{ gameStatus.pause ? '继续' : '选好了' }}

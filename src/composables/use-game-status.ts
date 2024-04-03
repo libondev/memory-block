@@ -5,7 +5,6 @@ import { getHighestScoreInHistory } from '@/composables/use-local-cache'
 // 游戏核心状态管理，分数、生命值、目标方块等
 export function useGameStatus() {
   const route = useRoute()
-  const router = useRouter()
 
   const { level, levelConfig } = (() => {
     // 获取当前游戏配置
@@ -16,11 +15,18 @@ export function useGameStatus() {
     if (level === 'custom') {
       const localCustomLevel = localStorage.getItem('customLevelConfig')
 
+      // 如果没设置就用预设的最简单的
       if (localCustomLevel) {
         levelConfig = JSON.parse(localCustomLevel)
-      } else {
-        router.replace('/settings/custom')
-        useToastError('请先设置自定义模式')
+
+        // 本地保存的配置可能会有问题，这里做一下合法性校验
+
+        // 如果最小数量大于最大数量，交换两者
+        if (levelConfig.min > levelConfig.max) {
+          // @ts-expect-error let me do this!
+          // eslint-disable-next-line style/max-statements-per-line
+          min = levelConfig.max; max = levelConfig.min
+        }
       }
     }
 
@@ -55,15 +61,25 @@ export function useGameStatus() {
     const { min, max, grid } = levelConfig
 
     const target = new Set<string>()
-    // 生成随机数量
-    const counts = Math.floor(Math.random() * (max - min + 1)) + min
 
-    // 如果生成的数量不够则继续生成
-    while (target.size < counts) {
-      const row = Math.floor(Math.random() * grid)
-      const col = Math.floor(Math.random() * grid)
+    // 如果最大数量超过了格子数，则重置为格子数
+    if (max >= grid * grid) {
+      for (let x = 0; x < grid; x++) {
+        for (let y = 0; y < grid; y++) {
+          target.add(`${x},${y}`)
+        }
+      }
+    } else {
+      // 生成随机数量
+      const counts = Math.floor(Math.random() * (max - min + 1)) + min
 
-      target.add(`${row},${col}`)
+      // 如果生成的数量不够则继续生成
+      while (target.size < counts) {
+        const row = Math.floor(Math.random() * grid)
+        const col = Math.floor(Math.random() * grid)
+
+        target.add(`${row},${col}`)
+      }
     }
 
     targetBlocks.value = target
