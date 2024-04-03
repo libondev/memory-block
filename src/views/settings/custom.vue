@@ -23,7 +23,7 @@ function saveCustomLevelConfig() {
 
   let size = 'size-8'
 
-  const { grid } = customLevelConfig.value
+  const { grid, min, max } = customLevelConfig.value
 
   if (grid <= 4) {
     size = 'size-12'
@@ -33,6 +33,18 @@ function saveCustomLevelConfig() {
     size = 'size-10'
   } else if (grid <= 9) {
     size = 'size-9'
+  }
+
+  // 保证 min 小于等于 max
+  if (min > max) {
+    [customLevelConfig.value.max, customLevelConfig.value.min] = [customLevelConfig.value.min, customLevelConfig.value.max]
+  }
+
+  // 如果最大/最小值超过了格子数，就设置为格子数
+  if (max > grid * grid) {
+    customLevelConfig.value.max = grid * grid
+  } else if (min > grid * grid) {
+    customLevelConfig.value.min = grid * grid
   }
 
   localStorage.setItem('customLevelConfig', JSON.stringify({ size, ...customLevelConfig.value }))

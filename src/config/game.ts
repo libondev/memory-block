@@ -53,8 +53,8 @@ export const LEVEL_GRIDS = {
     max: 1,
     rate: 1,
     health: 1,
-    internal: 3,
-    size: 'size-8',
+    internal: 2,
+    size: 'size-12',
   },
 } as const
 
