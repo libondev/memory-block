@@ -39,6 +39,7 @@ export function useGameScore(
     timestamp.value = lastTime
     lastTimestamp = performance.now()
 
+    stopRecording()
     timestampId = window.setInterval(() => {
       timestamp.value += 1
     }, 1000)

@@ -215,7 +215,7 @@ onBeforeUnmount(() => {
           <span class="flex-1 text-center">{{ timestamp }}s</span>
         </div>
 
-        <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800">
+        <div class="flex items-center h-8 px-2 pt-0.5 rounded-full border border-input bg-slate-100 dark:bg-slate-800">
           <i class="i-solar-health-bold text-lg mr-1 text-red-500" />
           <div v-if="gameHealth <= 5" class="w-4 h-4 mx-auto overflow-hidden">
             <div
@@ -237,7 +237,7 @@ onBeforeUnmount(() => {
 
       <div class="mt-2 font-mono flex items-center justify-between leading-none gap-4 w-60">
         <div v-if="level !== 'custom'" class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
-          <i class="i-solar-ranking-bold-duotone text-lg translate-y-[-1.5px] mr-1 opacity-70" />
+          <i class="i-solar-ranking-bold-duotone text-lg translate-y-[-1.5px] mr-1 text-yellow-400" />
           <span class="flex-1 text-center">{{ highestScore }}</span>
         </div>
       </div>
