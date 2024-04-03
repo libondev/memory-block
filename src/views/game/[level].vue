@@ -173,9 +173,10 @@ function onResetBlocks() {
   }
 }
 
-function handleCheckboxChange(e: Event) {
+// 选中/取消方块时更新选中数量
+function onCheckboxChange(e: Event) {
   const target = e.target as HTMLInputElement
-  setCheckedNumber(target.checked ? 1 : -1)
+  setCheckedNumber(checkedNumber.value += (target.checked ? 1 : -1))
 }
 
 onMounted(() => {
@@ -190,7 +191,7 @@ onBeforeUnmount(() => {
 <template>
   <main class="h-full flex items-center justify-center">
     <div>
-      <h2 className="w-full flex items-center justify-center text-xl font-mono">
+      <h2 class="w-full flex items-center justify-center text-xl font-mono">
         {{ gameStatus.previewing ? '请记住以下方块位置' : gameStatus.over ? '游戏结束' : '游戏开始' }}<template v-if="countdown">
           ({{ countdown }})
         </template>
@@ -198,22 +199,22 @@ onBeforeUnmount(() => {
 
       <div class="my-6 font-mono flex items-center w-60">
         <div class="flex flex-col text-lg w-24 min-w-20">
-          <span class="flex items-center">
+          <div class="flex items-center">
             <i class="i-solar-ranking-broken translate-y-[-1.5px] mr-0.5" />
             {{ highestScore }}
-          </span>
+          </div>
 
-          <span class="flex items-center">
+          <div class="flex items-center">
             <i class="i-solar-stop-bold text-emerald-500 mr-0.5" />
             {{ checkedNumber }}/{{ targetBlocks.size }}
-          </span>
+          </div>
 
-          <span class="flex items-center">
+          <div class="flex items-center">
             <i class="i-solar-alarm-add-broken mr-0.5" />
             {{ timestamp }}s
-          </span>
+          </div>
 
-          <span class="flex items-center">
+          <div class="flex items-center">
             <i class="i-solar-health-bold text-red-500" />
             <div class="w-4 h-4 overflow-hidden">
               <div
@@ -229,7 +230,7 @@ onBeforeUnmount(() => {
                 </span>
               </div>
             </div>
-          </span>
+          </div>
         </div>
 
         <div class="relative flex-1 text-[40px] text-right">
@@ -251,7 +252,7 @@ onBeforeUnmount(() => {
         :config="levelConfig"
         :is-max="checkedNumber >= targetBlocks.size"
         :class="gameStatus.playing ? 'playing' : 'pointer-events-none'"
-        @change="handleCheckboxChange"
+        @change="onCheckboxChange"
       />
 
       <div class="mt-12 mb-20  gap-4 flex justify-center">
