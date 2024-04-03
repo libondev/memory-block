@@ -1,6 +1,6 @@
 import localforage from 'localforage'
 import { name } from '../../package.json'
-import type { GAME_LEVELS, GameLevel } from '@/config/game'
+import type { GameLevel } from '@/config/game'
 
 localforage.config({
   name,
@@ -27,16 +27,6 @@ export function getHighestScoreInHistory(level: GameLevel) {
 // 设置最高分
 export function setHighestScoreInHistory(level: GameLevel, score: number) {
   localforage.setItem(HIGHEST_SCORE_KEY + level, score)
-}
-
-// 获取自定义游戏等级配置
-export function getCustomLevelConfig() {
-  return localforage.getItem<typeof GAME_LEVELS[GameLevel]>('customLevelConfig')
-}
-
-// 设置自定义游戏等级配置
-export function setCustomLevelConfig(config: typeof GAME_LEVELS[GameLevel]) {
-  localforage.setItem('customLevelConfig', config)
 }
 
 export function appendRecordToStore(record: RecordItem) {

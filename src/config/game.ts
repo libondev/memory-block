@@ -3,7 +3,7 @@ export const GAME_LEVELS = {
   normal: { code: 'normal', type: 'primary', en: 'Normal Level', zh: '中等难度', path: '/game/normal' },
   master: { code: 'master', type: 'warning', en: 'Master Level', zh: '困难难度', path: '/game/master' },
   expert: { code: 'expert', type: 'danger', en: 'Expert Level', zh: '专家难度', path: '/game/expert' },
-  // custom: { code: 'custom', type: 'custom', en: 'Practice Mode', zh: '练习模式', path: '/game/expert' },
+  custom: { code: 'custom', type: 'custom', en: 'Practice Mode', zh: '练习模式', path: '/settings/custom' },
 } as const
 
 export const LEVEL_GRIDS = {
@@ -44,6 +44,16 @@ export const LEVEL_GRIDS = {
     rate: 1.8,
     health: 2,
     internal: 2,
+    size: 'size-8',
+  },
+
+  custom: {
+    grid: 3,
+    min: 1,
+    max: 1,
+    rate: 1,
+    health: 1,
+    internal: 3,
     size: 'size-8',
   },
 } as const

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import confetti from 'canvas-confetti'
 
-import { useGame } from '@/composables/use-game'
+import { useGameStatus } from '@/composables/use-game-status'
 import { useGameScore } from '@/composables/use-game-score'
 import { useCheckedBlocks } from '@/composables/use-checked-blocks'
 import { setHighestScoreInHistory } from '@/composables/use-local-cache'
@@ -33,7 +33,7 @@ const {
 
   updateHighestScoreStatus,
   generateRandomTargetBlock,
-} = useGame()
+} = useGameStatus()
 
 const {
   fail: playFailSound,

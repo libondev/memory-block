@@ -3,13 +3,26 @@ import { type GameLevel, LEVEL_GRIDS } from '@/config/game'
 import { getHighestScoreInHistory } from '@/composables/use-local-cache'
 
 // 游戏核心状态管理，分数、生命值、目标方块等
-export function useGame() {
+export function useGameStatus() {
   const route = useRoute()
+  const router = useRouter()
 
   const { level, levelConfig } = (() => {
     // 获取当前游戏配置
     const level = route.params.level as GameLevel || 'easy'
-    const levelConfig = LEVEL_GRIDS[level] || LEVEL_GRIDS.easy
+    let levelConfig = LEVEL_GRIDS[level]
+
+    // 如果是自定义模式
+    if (level === 'custom') {
+      const localCustomLevel = localStorage.getItem('customLevelConfig')
+
+      if (localCustomLevel) {
+        levelConfig = JSON.parse(localCustomLevel)
+      } else {
+        router.replace('/settings/custom')
+        useToastError('请先设置自定义模式')
+      }
+    }
 
     return {
       level,
