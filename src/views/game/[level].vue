@@ -1,22 +1,10 @@
 <script lang="ts" setup>
 import confetti from 'canvas-confetti'
 
-import { type GameLevel, LEVEL_GRIDS } from '@/config/game'
-
+import { useGameStatus } from '@/composables/use-game-status'
 import { useGameScore } from '@/composables/use-game-score'
 import { useCheckedBlocks } from '@/composables/use-checked-blocks'
-import { getHighestScoreInHistory, setHighestScoreInHistory } from '@/composables/use-local-cache'
-
-const { level, levelConfig } = (() => {
-  // 获取当前游戏配置
-  const level = useRoute().params.level as GameLevel || 'easy'
-  const levelConfig = LEVEL_GRIDS[level] || LEVEL_GRIDS.easy
-
-  return {
-    level,
-    levelConfig,
-  }
-})()
+import { setHighestScoreInHistory } from '@/composables/use-local-cache'
 
 type GameStatus = 'over' | 'pause' | 'playing' | 'previewing'
 
@@ -34,18 +22,18 @@ function setGameStatus(status: GameStatus) {
   _gameState.value = status
 }
 
-const getScoreVisible = shallowRef(false)
+const {
+  level,
+  gameHealth,
+  levelConfig,
+  targetBlocks,
+  highestScore,
+  gameHealthList,
+  showHighestScoreBadge,
 
-const gameHealth = shallowRef(levelConfig.health)
-const checkedNumber = shallowRef(0)
-
-const highestScore = shallowRef(0)
-const showHighestScoreBadge = shallowRef(false)
-
-const gameHealthList = computed(() => Array.from({ length: levelConfig.health + 1 }, (_, i) => i))
-
-// 生成随机高亮的块
-const targetBlocks = shallowRef(new Set<string>())
+  updateHighestScoreStatus,
+  generateRandomTargetBlock,
+} = useGameStatus()
 
 const {
   fail: playFailSound,
@@ -58,12 +46,16 @@ const {
   timestamp,
   gameScore,
   deltaScore,
+  showDeltaScore,
   setGameScore,
   stopRecording,
   startRecording,
-} = useGameScore(levelConfig)
+  onEndHideDeltaScore,
+} = useGameScore(levelConfig, targetBlocks)
 
 const {
+  checkedNumber,
+  setCheckedNumber,
   uncheckAllBlocks,
   uncheckWrongBlocks,
   uncheckMissBlocks,
@@ -82,14 +74,11 @@ const {
 let startTimeoutId = -1
 
 async function startGame() {
-  checkedNumber.value = 0
-  showHighestScoreBadge.value = false
-  targetBlocks.value = generateRandomTarget(levelConfig)
-  // 获取历史最高分
-  highestScore.value = await getHighestScoreInHistory(level) || 0
-
   resetCountdown()
   startCountdown()
+
+  updateHighestScoreStatus()
+  generateRandomTargetBlock()
 
   // 重置所有错误块的选中
   uncheckAllBlocks()
@@ -120,10 +109,9 @@ function onCheckResult() {
 
   // 如果匹配成功
   if (matched) {
-    getScoreVisible.value = true
-    setGameScore(targetBlocks.value.size)
-    startGame()
     playSuccessSound()
+    setGameScore()
+    startGame()
 
     return
   }
@@ -177,7 +165,6 @@ function gameOver() {
 
 function onResetBlocks() {
   uncheckAllBlocks()
-  checkedNumber.value = 0
 
   if (gameStatus.value.over) {
     gameScore.value = 0
@@ -186,28 +173,9 @@ function onResetBlocks() {
   }
 }
 
-// 动画结束后隐藏
-function onAnimationend() {
-  getScoreVisible.value = false
-}
-
-function generateRandomTarget({ min, max, grid }: typeof LEVEL_GRIDS[GameLevel]) {
-  const target = new Set<string>()
-  const count = Math.floor(Math.random() * (max - min + 1)) + min
-
-  while (target.size < count) {
-    const row = Math.floor(Math.random() * grid)
-    const col = Math.floor(Math.random() * grid)
-
-    target.add(`${row},${col}`)
-  }
-
-  return target
-}
-
 function handleCheckboxChange(e: Event) {
   const target = e.target as HTMLInputElement
-  checkedNumber.value += target.checked ? 1 : (-1)
+  setCheckedNumber(target.checked ? 1 : -1)
 }
 
 onMounted(() => {
@@ -271,9 +239,9 @@ onBeforeUnmount(() => {
 
           <Transition name="increase-score">
             <span
-              v-show="getScoreVisible"
+              v-show="showDeltaScore"
               class="absolute text-[60%] text-emerald-500 duration-500 animate-in fade-in slide-in-from-bottom"
-              @animationend="onAnimationend"
+              @animationend="onEndHideDeltaScore"
             >+{{ deltaScore }}</span>
           </Transition>
         </div>

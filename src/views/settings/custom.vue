@@ -1,0 +1,86 @@
+<script lang="ts" setup>
+import { LEVEL_GRIDS } from '@/config/game'
+
+const router = useRouter()
+
+const customLevelConfig = ref((() => {
+  const cache = localStorage.getItem('customLevelConfig')
+
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  const { size, ...configValue } = Object.assign({}, LEVEL_GRIDS.custom, cache ? JSON.parse(cache) : {})
+
+  return configValue
+})())
+
+function saveCustomLevelConfig() {
+  const illegalValue = Object.values(customLevelConfig.value).find(v => typeof v !== 'number' || v <= 0 || !Number.isInteger(v))
+
+  if (illegalValue) {
+    useToastError('配置只能为大于 1 的整数')
+
+    return
+  }
+
+  let size = 'size-8'
+
+  const { grid } = customLevelConfig.value
+
+  if (grid <= 4) {
+    size = 'size-12'
+  } else if (grid <= 6) {
+    size = 'size-11'
+  } else if (grid <= 7) {
+    size = 'size-10'
+  } else if (grid <= 9) {
+    size = 'size-9'
+  }
+
+  localStorage.setItem('customLevelConfig', JSON.stringify({ size, ...customLevelConfig.value }))
+
+  router.push('/game/custom')
+}
+</script>
+
+<template>
+  <div class="flex h-full py-16 items-center justify-center overflow-auto">
+    <form class="w-72" @submit.prevent="saveCustomLevelConfig">
+      <h2 class="text-xl mb-2">
+        自定义关卡
+      </h2>
+
+      <div class="mb-4">
+        <span class="text-sm">网格数量<i class="text-gray-500">（X * Y）</i></span>
+        <Input v-model.number="customLevelConfig.grid" maxlength="2" />
+      </div>
+
+      <div class="mb-4">
+        <span class="text-sm">最小生成方块数</span>
+        <Input v-model.number="customLevelConfig.min" maxlength="2" />
+      </div>
+
+      <div class="mb-4">
+        <span class="text-sm">最大生成方块数</span>
+        <Input v-model.number="customLevelConfig.max" maxlength="2" />
+      </div>
+
+      <!-- <div class="mb-4">
+        <span class="text-sm">得分倍率<i class="text-gray-500">（自定义模式下不可用）</i></span>
+        <Input :model-value="customLevelConfig.rate" disabled />
+      </div> -->
+
+      <div class="mb-4">
+        <span class="text-sm">生命值</span>
+        <Input v-model.number="customLevelConfig.health" maxlength="15" />
+      </div>
+
+      <div class="mb-8">
+        <span class="text-sm">每回合开始前的记忆时间<i class="text-gray-500">（秒）</i></span>
+        <Input v-model.number="customLevelConfig.internal" maxlength="2" />
+      </div>
+
+      <Button type="primary">
+        设置完成，开始游戏
+      </Button>
+    </form>
+  </div>
+</template>

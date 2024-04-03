@@ -3,6 +3,9 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
   const missBlocks = [] as HTMLElement[]
   const wrongBlocks = [] as HTMLElement[]
 
+  // 当前选中的 block 数量
+  const checkedNumber = shallowRef(0)
+
   /**
    * 获取页面中所有的 block
    */
@@ -53,6 +56,8 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
     allBlocks.forEach((block) => {
       block.checked = false
     })
+
+    setCheckedNumber(0)
   }
 
   /**
@@ -116,6 +121,10 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
     }
   }
 
+  function setCheckedNumber(counts: number) {
+    checkedNumber.value = counts
+  }
+
   onMounted(() => {
     getAllBlocks()
   })
@@ -127,6 +136,9 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
   })
 
   return {
+    checkedNumber,
+
+    setCheckedNumber,
     uncheckAllBlocks,
     checkedTargetBlock,
     markAllMissBlocks,

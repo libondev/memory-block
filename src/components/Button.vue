@@ -28,7 +28,7 @@ function onClick(event: MouseEvent) {
   <div class="inline-block h-10" :class="{ 'opacity-40 pointer-events-none': disabled }" @click="onClick">
     <component
       :is="as"
-      class="inline-block px-3 py-1.5 select-none rounded-lg text-sm shadow-sm border-[rgba(0,0,0,.2)] border-x-[1.5px] border-t-[1.5px] border-b-4 active:border-b-[1.5px] active:translate-y-1 active:shadow-none"
+      class="inline-block px-3 py-1.5 select-none rounded-lg text-sm shadow-sm border-[rgba(0,0,0,.2)] border-x-[1.5px] border-t-[1.5px] border-b-4 active:border-b-[1.5px] active:translate-y-1 active:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
       :class="VARIANT[type]"
       v-bind="$attrs"
     >
