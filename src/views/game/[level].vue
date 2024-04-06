@@ -67,16 +67,24 @@ const {
 
 const {
   value: countdown,
-  start: startCountdown,
-  reset: resetCountdown,
-} = useCountdown({ times: levelConfig.internal })
+  start: startPreviewCountdown,
+  reset: resetPrewiewCountdown,
+  pause: pausePreviewCountdown,
+} = useCountdown({
+  times: levelConfig.internal,
+  // 当倒计时结束时开始游戏并
+  onFinished: onFinishedPreviewCountdown,
+})
 
-let startTimeoutId = -1
+// 当预览倒计时结束时开始游戏计分, 取消所有预览块, 并设置游戏状态
+function onFinishedPreviewCountdown() {
+  // 开始计分计时
+  startRecording()
+  uncheckAllBlocks()
+  setGameStatus('playing')
+}
 
 async function startGame() {
-  resetCountdown()
-  startCountdown()
-
   updateHighestScoreStatus()
   generateRandomTargetBlock()
 
@@ -89,14 +97,9 @@ async function startGame() {
   // 设置游戏状态为预览模式
   setGameStatus('previewing')
 
-  clearTimeout(startTimeoutId)
-  // 延迟关闭预览模式
-  startTimeoutId = window.setTimeout(() => {
-    // 开始计分计时
-    startRecording()
-    uncheckAllBlocks()
-    setGameStatus('playing')
-  }, levelConfig.internal * 1000)
+  // 重置读秒并重新开始倒计时
+  resetPrewiewCountdown()
+  startPreviewCountdown()
 }
 
 function onCheckResult() {
@@ -186,12 +189,28 @@ function formatScore(score: number) {
   return numStr.replace(reg, ',')
 }
 
+// 当浏览器游戏标签不可见时暂停计时
+function onGameTabVisibilityChange() {
+  if (document.visibilityState === 'hidden') {
+    stopRecording()
+    pausePreviewCountdown()
+    return
+  }
+
+  // 可见时再重新开始读秒和预览模式的计时
+  startRecording(timestamp.value)
+  startPreviewCountdown()
+}
+
 onMounted(() => {
   startGame()
+
+  document.addEventListener('visibilitychange', onGameTabVisibilityChange)
 })
 
 onBeforeUnmount(() => {
-  clearTimeout(startTimeoutId)
+  stopRecording()
+  document.removeEventListener('visibilitychange', onGameTabVisibilityChange)
 })
 </script>
 
@@ -204,7 +223,7 @@ onBeforeUnmount(() => {
         </template>
       </h2>
 
-      <div class="mt-6 font-mono flex items-center justify-between leading-none gap-4 min-w-60">
+      <div class="my-6 font-mono flex flex-wrap items-center justify-center leading-none gap-4 max-w-96">
         <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
           <i class="i-solar-stop-bold text-lg mr-1 text-emerald-500" />
           <span class="flex-1 text-center">{{ checkedNumber }}/{{ targetBlocks.size }}</span>
@@ -215,7 +234,7 @@ onBeforeUnmount(() => {
           <span class="flex-1 text-center">{{ timestamp }}s</span>
         </div>
 
-        <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800">
+        <div class="flex items-center h-8 px-2 pt-0.5 rounded-full border border-input bg-slate-100 dark:bg-slate-800">
           <i class="i-solar-health-bold text-lg mr-1 text-red-500" />
           <div v-if="gameHealth <= 5" class="w-4 h-4 mx-auto overflow-hidden">
             <div
@@ -233,17 +252,16 @@ onBeforeUnmount(() => {
           </div>
           <span v-else class="flex-1 text-center">{{ gameHealth >= 99 ? '99+' : gameHealth }}</span>
         </div>
-      </div>
 
-      <div class="mt-2 font-mono flex items-center justify-between leading-none gap-4 w-60">
+        <!-- 练习模式不展示最高分字段 -->
         <div v-if="level !== 'custom'" class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
-          <i class="i-solar-ranking-bold-duotone text-lg translate-y-[-1.5px] mr-1 opacity-70" />
-          <span class="flex-1 text-center">{{ highestScore }}</span>
+          <i class="i-solar-ranking-bold-duotone text-lg translate-y-[-1.5px] mr-1 text-yellow-400" />
+          <span class="flex-1 text-center max-w-80 truncate">{{ highestScore }}</span>
         </div>
       </div>
 
-      <div class="relative mb-4 text-4xl text-center">
-        <span class="z-10 font-medium">{{ formatScore(gameScore) }}</span>
+      <div class="relative mb-6 text-5xl text-center">
+        <span class="z-10 font-mono font-medium">{{ formatScore(gameScore) }}</span>
 
         <span v-if="showHighestScoreBadge" class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500">BEST</span>
 

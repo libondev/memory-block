@@ -39,6 +39,7 @@ export function useGameScore(
     timestamp.value = lastTime
     lastTimestamp = performance.now()
 
+    stopRecording()
     timestampId = window.setInterval(() => {
       timestamp.value += 1
     }, 1000)
@@ -51,23 +52,6 @@ export function useGameScore(
   function onEndHideDeltaScore() {
     showDeltaScore.value = false
   }
-
-  // 当页面不可见时停止计时
-  function onVisibilityChange() {
-    if (document.visibilityState === 'hidden') {
-      stopRecording()
-    } else {
-      startRecording(timestamp.value)
-    }
-  }
-
-  document.addEventListener('visibilitychange', onVisibilityChange)
-
-  onBeforeUnmount(() => {
-    stopRecording()
-
-    document.removeEventListener('visibilitychange', onVisibilityChange)
-  })
 
   return {
     timestamp,

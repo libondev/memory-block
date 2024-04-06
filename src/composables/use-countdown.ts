@@ -19,14 +19,21 @@ interface Options {
   /**
    * 当倒计时结束时
    */
-  onEnd?: () => void
+  onFinished?: () => void
+
+  /**
+   * 当读秒改变时
+   * @param second {number}
+   */
+  // onChange?: (second: number) => void
 }
 
 export function useCountdown({
   times = 60,
   interval = 1,
   immediate = false,
-  onEnd = () => { },
+  onFinished = () => { },
+  // onChange = (second: number) => { },
 } = {} as Options) {
   let timeoutId: number
 
@@ -44,7 +51,7 @@ export function useCountdown({
     timeoutId = window.setTimeout(() => {
       remainder.value -= interval
 
-      remainder.value ? start(false) : onEnd()
+      remainder.value ? start(false) : onFinished()
     }, interval * 1000)
   }
 

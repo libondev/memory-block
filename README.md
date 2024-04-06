@@ -28,3 +28,8 @@
 一些想做但不确定会不会做的功能
 - [ ] 排行榜
 - [ ] 联机模式
+
+## 补充
+- 图标来自于：[iconify](https://iconify.design/)，同时使用了 [icones](https://icones.js.org/) 网站来预览图
+- 有趣的游戏音效来自：[Duolingo](https://www.duolingo.com/)，因为我也是个Duolingo软件的忠实用户，很喜欢TA的音效设计。PS：请原谅我未经允许的使用😜
+- 项目技术栈为：Vue3 + Vite5 + TypeScript + TailwindCSS + VueRouter + VueUse + Pinia
