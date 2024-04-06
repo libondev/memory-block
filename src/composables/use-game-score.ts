@@ -53,23 +53,6 @@ export function useGameScore(
     showDeltaScore.value = false
   }
 
-  // 当页面不可见时停止计时
-  function onVisibilityChange() {
-    if (document.visibilityState === 'hidden') {
-      stopRecording()
-    } else {
-      startRecording(timestamp.value)
-    }
-  }
-
-  document.addEventListener('visibilitychange', onVisibilityChange)
-
-  onBeforeUnmount(() => {
-    stopRecording()
-
-    document.removeEventListener('visibilitychange', onVisibilityChange)
-  })
-
   return {
     timestamp,
     gameScore,
