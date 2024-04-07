@@ -104,6 +104,10 @@ async function startGame() {
 }
 
 function onCheckResult() {
+  if (!gameStatus.value.playing) {
+    return
+  }
+
   const { matched, blocks } = getAllCheckedResult()
 
   if (!matched && !blocks.length) {
@@ -245,9 +249,24 @@ function onPageHideSaveLocalStatus() {
   }))
 }
 
+// PC 端监听键盘按下事件
+function onBoardKeyDown({ code }: KeyboardEvent) {
+  const KEY_EVENTS_MAP = {
+    Enter: onCheckResult,
+    Delete: onResetBlocks,
+  } as const
+
+  KEY_EVENTS_MAP[code as keyof typeof KEY_EVENTS_MAP]?.()
+}
+
 onMounted(() => {
   startGame()
   onRestoreLocalStatus()
+
+  // 非移动端增加键盘事件
+  if (!window.ontouchstart) {
+    document.addEventListener('keydown', onBoardKeyDown)
+  }
 
   document.addEventListener('visibilitychange', onGameTabVisibilityChange)
   window.addEventListener('pagehide', onPageHideSaveLocalStatus, { once: true })
@@ -256,9 +275,13 @@ onMounted(() => {
 onBeforeUnmount(() => {
   stopRecording()
 
-  document.removeEventListener('visibilitychange', onGameTabVisibilityChange)
+  if (!window.ontouchstart) {
+    document.removeEventListener('keydown', onBoardKeyDown)
+  }
+
   // 如果是退出了当前页面再刷新的则不保存状态
   window.removeEventListener('pagehide', onPageHideSaveLocalStatus)
+  document.removeEventListener('visibilitychange', onGameTabVisibilityChange)
 })
 </script>
 
