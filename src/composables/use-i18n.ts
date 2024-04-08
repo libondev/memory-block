@@ -1,6 +1,8 @@
 import type { ShallowRef } from 'vue'
 import { type Language, getLanguage, setLanguage } from './use-local-cache'
 import zhCN from '@/locale/zh-CN.json'
+import enUS from '@/locale/en-US.json'
+import jaJP from '@/locale/ja-JP.json'
 
 interface I18N {
   lang: ShallowRef<Language>
@@ -15,12 +17,12 @@ function loadLanguage(lang: Language) {
 }
 
 export function useI18N() {
-  const lang = shallowRef<Language>('zh-CN')
+  const lang = shallowRef<Language>(getLanguage() as Language)
 
   const messages = ref<Record<Language, null | Record<string, string>>>({
     'zh-CN': zhCN,
-    'en-US': null,
-    'ja-JP': null,
+    'en-US': enUS,
+    'ja-JP': jaJP,
   })
 
   const msg = computed(() => messages.value[lang.value] ?? messages.value['zh-CN'])
@@ -36,15 +38,11 @@ export function useI18N() {
     }
   }
 
-  getLanguage().then((val) => {
-    if (val) {
-      _setLang(val)
-    }
-  })
-
   const $t = (key: string, fallback: string = ''): string => {
     return msg.value?.[key] ?? fallback
   }
+
+  _setLang(lang.value)
 
   provide(i18NInjectionKey, {
     lang,

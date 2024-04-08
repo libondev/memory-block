@@ -52,9 +52,9 @@ export async function getAllRecordsFromStore() {
 }
 
 // 获取语言
-export const getLanguage = () => localforage.getItem<Language>(LANGUAGE_KEY, v => v ?? 'zh-CN')
+export const getLanguage = () => localStorage.getItem(LANGUAGE_KEY) ?? 'zh-CN'
 
 // 设置语言
 export function setLanguage(lang: Language = 'zh-CN') {
-  localforage.setItem(LANGUAGE_KEY, lang)
+  localStorage.setItem(LANGUAGE_KEY, lang)
 }
