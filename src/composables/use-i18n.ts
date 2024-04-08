@@ -32,8 +32,6 @@ export function useI18N() {
     return msg.value[key] ?? fallback
   }
 
-  _setLang(lang.value)
-
   provide(i18NInjectionKey, {
     lang,
     setLanguage: _setLang,
