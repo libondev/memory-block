@@ -5,8 +5,11 @@ import { useGameStatus } from '@/composables/use-game-status'
 import { useGameScore } from '@/composables/use-game-score'
 import { useCheckedBlocks } from '@/composables/use-checked-blocks'
 import { setHighestScoreInHistory } from '@/composables/use-local-cache'
+import { i18NInjectionKey } from '@/composables/use-i18n'
 
 type GameStatus = 'over' | 'pause' | 'playing' | 'previewing'
+
+const { $t } = inject(i18NInjectionKey)!
 
 const _gameState = shallowRef<GameStatus>('previewing')
 
@@ -106,7 +109,7 @@ function onCheckResult() {
   const { matched, blocks } = getAllCheckedResult()
 
   if (!matched && !blocks.length) {
-    useToast('请先选择至少一个方块')
+    useToast($t('select-one-first', '请先选择至少一个方块'))
     return
   }
 
@@ -153,7 +156,7 @@ function gameOver() {
   markAllWrongBlocks()
   setGameStatus('over')
 
-  useToastError('游戏结束')
+  useToastError($t('game-over', '游戏结束'))
 
   // 如果分数比历史最高分高, 更新历史最高分, 并播放纸屑
   if (gameScore.value > highestScore.value) {
@@ -218,7 +221,7 @@ onBeforeUnmount(() => {
   <main class="h-full flex items-center justify-center">
     <div>
       <h2 class="w-full flex items-center justify-center text-xl font-mono">
-        {{ gameStatus.previewing ? '请记住以下方块位置' : gameStatus.over ? '游戏结束' : '游戏开始' }}<template v-if="countdown">
+        {{ gameStatus.previewing ? $t('remember-block-locations', '请记住以下方块位置') : gameStatus.over ? $t('game-over', '游戏结束') : $t('start', '游戏开始') }}<template v-if="countdown">
           ({{ countdown }})
         </template>
       </h2>
@@ -286,17 +289,16 @@ onBeforeUnmount(() => {
           :disabled="gameStatus.previewing || gameStatus.pause"
           @click="onResetBlocks"
         >
-          {{ gameStatus.over ? '再来一次' : '清空选中' }}
+          {{ gameStatus.over ? $t('again', '再来一次') : $t('clear', '清空选中') }}
         </Button>
 
         <Button
           v-show="!gameStatus.over"
           :disabled="gameStatus.previewing"
           :type="gameStatus.pause ? 'warning' : 'primary'"
-          class="w-[72px]"
           @click="onCheckResult"
         >
-          {{ gameStatus.pause ? '继续' : '选好了' }}
+          {{ gameStatus.pause ? $t('continue', '继续') : $t('selected', '选好了') }}
         </Button>
       </div>
     </div>

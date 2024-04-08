@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import { LEVEL_GRIDS } from '@/config/game'
+import { i18NInjectionKey } from '@/composables/use-i18n'
+
+const { $t } = inject(i18NInjectionKey)!
 
 const router = useRouter()
 
@@ -16,7 +19,7 @@ function saveCustomLevelConfig() {
   const illegalValue = Object.values(customLevelConfig.value).find(v => typeof v !== 'number' || v <= 0 || !Number.isInteger(v))
 
   if (illegalValue) {
-    useToastError('配置只能为大于 1 的整数')
+    useToastError($t('configuration-integer-gt', '配置只能为大于 1 的整数'))
 
     return
   }
@@ -57,21 +60,21 @@ function saveCustomLevelConfig() {
   <div class="flex h-full py-16 items-center justify-center overflow-auto">
     <form class="w-72" @submit.prevent="saveCustomLevelConfig">
       <h2 class="text-xl mb-2">
-        自定义关卡
+        {{ $t('custom-levels', '自定义关卡') }}
       </h2>
 
       <div class="mb-4">
-        <span class="text-sm">网格数量<i class="text-gray-500">（X * Y）</i></span>
+        <span class="text-sm">{{ $t('number-of-grids', '网格数量') }}<i class="text-gray-500">（X * Y）</i></span>
         <Input v-model.number="customLevelConfig.grid" maxlength="2" />
       </div>
 
       <div class="mb-4">
-        <span class="text-sm">最小生成方块数</span>
+        <span class="text-sm">{{ $t('minimum-blocks', '最小生成方块数') }}</span>
         <Input v-model.number="customLevelConfig.min" maxlength="2" />
       </div>
 
       <div class="mb-4">
-        <span class="text-sm">最大生成方块数</span>
+        <span class="text-sm">{{ $t('maximum-blocks', '最大生成方块数') }}</span>
         <Input v-model.number="customLevelConfig.max" maxlength="2" />
       </div>
 
@@ -81,17 +84,17 @@ function saveCustomLevelConfig() {
       </div> -->
 
       <div class="mb-4">
-        <span class="text-sm">生命值</span>
+        <span class="text-sm">{{ $t('hp', '生命值') }}</span>
         <Input v-model.number="customLevelConfig.health" maxlength="15" />
       </div>
 
       <div class="mb-8">
-        <span class="text-sm">每回合开始前的记忆时间<i class="text-gray-500">（秒）</i></span>
+        <span class="text-sm">{{ $t('memory-time', '每回合开始前的记忆时间') }}<i class="text-gray-500">（{{ $t('second', '秒') }}）</i></span>
         <Input v-model.number="customLevelConfig.internal" maxlength="2" />
       </div>
 
       <Button type="primary">
-        设置完成，开始游戏
+        {{ $t('setup-completed', '设置完成，开始游戏') }}
       </Button>
     </form>
   </div>

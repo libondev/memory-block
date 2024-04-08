@@ -1,0 +1,28 @@
+
+{
+  "memory-block": "Memory block",
+  "custom-levels": "Custom levels",
+  "number-of-grids": "Number of grids",
+  "minimum-blocks": "Minimum number of generated blocks",
+  "maximum-blocks": "Maximum number of generated blocks",
+  "hp": "HP",
+  "second": "second",
+  "setup-completed": "Setup completed, start the game",
+
+  "score": "Score",
+  "start-time": "Start time",
+  "end-time": "Ends time",
+  "using-time": "Using time",
+
+  "game-over": "Game over",
+  "start": "Start",
+  "again": "Again",
+  "clear": "Clear",
+  "selected": "Selected",
+  "continue": "Continue",
+
+  "memory-time": "Memory time before the start of each round",
+  "configuration-integer-gt": "Configuration can only be an integer greater than 1",
+  "select-one-first": "Please select at least one block first",
+  "remember-block-locations": "Please remember the following block locations"
+}

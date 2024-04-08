@@ -1,0 +1,27 @@
+{
+  "memory-block": "メモリ ブロック",
+  "custom-levels": "カスタム レベル",
+  "number-of-grids": "グリッドの数",
+  "minimum-blocks": "生成されるブロックの最小数",
+  "maximum-blocks": "生成されるブロックの最大数",
+  "hp": "HP",
+  "second": "秒",
+  "setup-completed": "セットアップが完了しました。ゲームを開始します",
+
+  "score": "スコア",
+  "start-time": "開始時刻",
+  "end-time": "終了時刻",
+  "using-time": "使用時間",
+
+  "game-over": "ゲームオーバー",
+  "start": "ゲーム開始",
+  "again": "また",
+  "clear": "選択をクリアします",
+  "selected": "選択済み",
+  "continue": "継続",
+
+  "memory-time": "各ラウンド開始前の記憶時間",
+  "configuration-integer-gt": "構成には 1 より大きい整数のみを指定できます",
+  "select-one-first": "最初に少なくとも 1 つのブロックを選択してください",
+  "remember-block-locations": "次のブロックの場所を覚えておいてください"
+}

@@ -15,9 +15,13 @@ export interface RecordItem {
   endTime: string
 }
 
+export type Language = 'zh-CN' | 'en-US' | 'ja-JP'
+
 export const RECORD_KEY = 'record'
 
 const HIGHEST_SCORE_KEY = 'highestScore.'
+
+const LANGUAGE_KEY = 'memoryBlockLanguage'
 
 // 获取最高分
 export function getHighestScoreInHistory(level: GameLevel) {
@@ -45,4 +49,12 @@ export async function getAllRecordsFromStore() {
   })
 
   return _records
+}
+
+// 获取语言
+export const getLanguage = () => localforage.getItem<Language>(LANGUAGE_KEY, v => v ?? 'zh-CN')
+
+// 设置语言
+export function setLanguage(lang: Language = 'zh-CN') {
+  localforage.setItem(LANGUAGE_KEY, lang)
 }
