@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          vueuse: ['@vueuse/core'],
+          // vueuse: ['@vueuse/core'],
         },
       },
     },
