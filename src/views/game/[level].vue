@@ -107,7 +107,8 @@ async function startGame() {
 }
 
 function onCheckResult() {
-  if (!gameStatus.value.playing) {
+  // 如果游戏已结束或者正在预览中
+  if (gameStatus.value.over || gameStatus.value.previewing) {
     return
   }
 
@@ -297,7 +298,7 @@ onBeforeUnmount(() => {
         </template>
       </h2>
 
-      <div class="my-6 font-mono flex flex-wrap items-center justify-center leading-none gap-4 max-w-96">
+      <div class="mx-auto my-6 font-mono flex flex-wrap items-center justify-center leading-none gap-4 max-w-96">
         <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
           <i class="i-solar-stop-bold text-lg mr-1 text-emerald-500" />
           <span class="flex-1 text-center">{{ checkedNumber }}/{{ targetBlocks.size }}</span>
