@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import confetti from 'canvas-confetti'
 
+import { name } from '@/../package.json'
+
 import { useGameStatus } from '@/composables/use-game-status'
 import { useGameScore } from '@/composables/use-game-score'
 import { useCheckedBlocks } from '@/composables/use-checked-blocks'
@@ -27,11 +29,7 @@ const {
   gameHealth,
   levelConfig,
   targetBlocks,
-  highestScore,
   gameHealthList,
-  showHighestScoreBadge,
-
-  updateHighestScoreStatus,
   generateRandomTargetBlock,
 } = useGameStatus()
 
@@ -46,11 +44,14 @@ const {
   timestamp,
   gameScore,
   deltaScore,
+  highestScore,
   showDeltaScore,
+  showScoreBadge,
   setGameScore,
   stopRecording,
   startRecording,
   onEndHideDeltaScore,
+  updateHighestScoreStatus,
 } = useGameScore(levelConfig, targetBlocks)
 
 const {
@@ -85,8 +86,8 @@ function onFinishedPreviewCountdown() {
 }
 
 async function startGame() {
-  updateHighestScoreStatus()
   generateRandomTargetBlock()
+  updateHighestScoreStatus(level)
 
   // 重置所有错误块的选中
   uncheckAllBlocks()
@@ -103,6 +104,10 @@ async function startGame() {
 }
 
 function onCheckResult() {
+  if (!gameStatus.value.playing) {
+    return
+  }
+
   const { matched, blocks } = getAllCheckedResult()
 
   if (!matched && !blocks.length) {
@@ -112,14 +117,14 @@ function onCheckResult() {
 
   // 如果匹配成功
   if (matched) {
-    playSuccessSound()
-    setGameScore()
     startGame()
+    setGameScore()
+    playSuccessSound()
 
     return
   }
 
-  // 如果上一步是选错的
+  // 如果上一步是选错的, 那么游戏状态会被设置为暂停
   if (gameStatus.value.pause) {
     startGame()
     return
@@ -158,7 +163,7 @@ function gameOver() {
   // 如果分数比历史最高分高, 更新历史最高分, 并播放纸屑
   if (gameScore.value > highestScore.value) {
     highestScore.value = gameScore.value
-    showHighestScoreBadge.value = true
+    showScoreBadge.value = true
 
     playOverSound()
     confetti({ spread: 120, particleCount: 300 })
@@ -202,14 +207,80 @@ function onGameTabVisibilityChange() {
   startPreviewCountdown()
 }
 
+// 当在当前页面刷新或退出的时候保存本地状态以便于恢复上次的状态
+// 但是只保存游戏的分数、生命值和选中的方块的状态，重新进入后会重新进入预览模式
+const savedLocalStatusKey = `${name}.fe.game-status.${level}`
+
+// 从本地恢复游戏状态
+function onRestoreLocalStatus() {
+  const localCache = localStorage.getItem(savedLocalStatusKey)
+
+  if (!localCache) {
+    return
+  }
+
+  try {
+    const { _score, _health, _blocks } = JSON.parse(localCache)
+
+    gameScore.value = _score
+    gameHealth.value = _health
+    targetBlocks.value = new Set(_blocks)
+
+    uncheckAllBlocks()
+    checkedTargetBlock()
+
+    // 恢复后进入预览模式, 重新开始读秒，主要是需要恢复分数和血量
+    setGameStatus('previewing')
+    resetPrewiewCountdown()
+    startPreviewCountdown()
+
+    // 恢复后删除本地缓存
+    localStorage.removeItem(savedLocalStatusKey)
+  } catch (e) { }
+}
+
+// 保存游戏状态到本地
+function onPageHideSaveLocalStatus() {
+  // 保存游戏状态
+  localStorage.setItem(savedLocalStatusKey, JSON.stringify({
+    _score: gameScore.value,
+    _health: gameHealth.value,
+    _blocks: [...targetBlocks.value],
+  }))
+}
+
+// PC 端监听键盘按下事件
+function onBoardKeyDown({ code }: KeyboardEvent) {
+  const KEY_EVENTS_MAP = {
+    Enter: onCheckResult,
+    Delete: onResetBlocks,
+  } as const
+
+  KEY_EVENTS_MAP[code as keyof typeof KEY_EVENTS_MAP]?.()
+}
+
 onMounted(() => {
   startGame()
+  onRestoreLocalStatus()
+
+  // 非移动端增加键盘事件
+  if (!window.ontouchstart) {
+    document.addEventListener('keydown', onBoardKeyDown)
+  }
 
   document.addEventListener('visibilitychange', onGameTabVisibilityChange)
+  window.addEventListener('pagehide', onPageHideSaveLocalStatus, { once: true })
 })
 
 onBeforeUnmount(() => {
   stopRecording()
+
+  if (!window.ontouchstart) {
+    document.removeEventListener('keydown', onBoardKeyDown)
+  }
+
+  // 如果是退出了当前页面再刷新的则不保存状态
+  window.removeEventListener('pagehide', onPageHideSaveLocalStatus)
   document.removeEventListener('visibilitychange', onGameTabVisibilityChange)
 })
 </script>
@@ -263,7 +334,7 @@ onBeforeUnmount(() => {
       <div class="relative mb-6 text-5xl text-center">
         <span class="z-10 font-mono font-medium">{{ formatScore(gameScore) }}</span>
 
-        <span v-if="showHighestScoreBadge" class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500">BEST</span>
+        <span v-if="showScoreBadge" class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500">BEST</span>
 
         <Transition name="increase-score">
           <span
