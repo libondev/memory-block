@@ -1,7 +1,5 @@
 import { type GameLevel, LEVEL_GRIDS } from '@/config/game'
 
-import { getHighestScoreInHistory } from '@/composables/use-local-cache'
-
 // 游戏核心状态管理，分数、生命值、目标方块等
 export function useGameStatus() {
   const route = useRoute()
@@ -43,19 +41,6 @@ export function useGameStatus() {
   const gameHealth = shallowRef(levelConfig.health)
   const gameHealthList = computed(() => Array.from({ length: levelConfig.health + 1 }, (_, i) => i))
 
-  const highestScore = shallowRef(0)
-  const showHighestScoreBadge = shallowRef(false)
-
-  // 更新历史最高分状态
-  function updateHighestScoreStatus() {
-    showHighestScoreBadge.value = false
-
-    getHighestScoreInHistory(level).then((v) => {
-    // 更新历史最高分
-      highestScore.value = v || 0
-    })
-  }
-
   // 生成目标方块
   function generateRandomTargetBlock() {
     const { min, max, grid } = levelConfig
@@ -90,11 +75,7 @@ export function useGameStatus() {
     gameHealth,
     levelConfig,
     targetBlocks,
-    highestScore,
     gameHealthList,
-    showHighestScoreBadge,
-
-    updateHighestScoreStatus,
     generateRandomTargetBlock,
   }
 }

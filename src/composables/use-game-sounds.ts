@@ -1,5 +1,5 @@
 import { useStorage, useToggle } from '@vueuse/core'
-import { name } from '../../package.json'
+import { name } from '@/../package.json'
 
 interface GameSounds {
   enableSounds: Ref<boolean>

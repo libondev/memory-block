@@ -1,5 +1,5 @@
 import localforage from 'localforage'
-import { name } from '../../package.json'
+import { name } from '@/../package.json'
 import type { GameLevel } from '@/config/game'
 
 localforage.config({
