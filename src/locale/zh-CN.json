@@ -6,20 +6,21 @@
   "maximum-blocks": "最大生成方块数",
   "hp": "生命值",
   "second": "秒",
-  "setup-completed": "设置完成，开始游戏",
-  
+  "save-success": "设置成功",
+  "setup-completed": "开始游戏",
+
   "score": "得分",
   "start-time": "开始于",
   "end-time": "结束于",
   "using-time": "用时",
-  
+
   "game-over": "游戏结束",
   "start": "游戏开始",
   "again": "再来一次",
   "clear": "清空选中",
   "selected": "选好了",
   "continue": "继续",
-  
+
   "memory-time": "每回合开始前的记忆时间",
   "configuration-integer-gt": "配置只能为大于 1 的整数",
   "select-one-first": "请先选择至少一个方块",

@@ -6,7 +6,8 @@
   "maximum-blocks": "生成されるブロックの最大数",
   "hp": "HP",
   "second": "秒",
-  "setup-completed": "セットアップが完了しました。ゲームを開始します",
+  "save-success": "設定が正常に保存されました",
+  "setup-completed": "ゲームをスタート",
 
   "score": "スコア",
   "start-time": "開始時刻",

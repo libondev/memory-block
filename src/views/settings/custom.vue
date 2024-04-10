@@ -15,7 +15,13 @@ const customLevelConfig = ref((() => {
   return configValue
 })())
 
+let toastTimeout = 0
+
 function saveCustomLevelConfig() {
+  if (toastTimeout) {
+    return
+  }
+
   const illegalValue = Object.values<number>(customLevelConfig.value).find(v => typeof v !== 'number' || v <= 0 || !Number.isInteger(v))
 
   if (illegalValue) {
@@ -38,21 +44,26 @@ function saveCustomLevelConfig() {
     size = 'size-9'
   }
 
+  // 如果最大/最小值超过了格子数，就设置为格子数
+  if (max > grid * grid) {
+    customLevelConfig.value.max = grid * grid
+  }
+
+  if (min > grid * grid) {
+    customLevelConfig.value.min = grid * grid
+  }
+
   // 保证 min 小于等于 max
   if (min > max) {
     [customLevelConfig.value.max, customLevelConfig.value.min] = [customLevelConfig.value.min, customLevelConfig.value.max]
   }
 
-  // 如果最大/最小值超过了格子数，就设置为格子数
-  if (max > grid * grid) {
-    customLevelConfig.value.max = grid * grid
-  } else if (min > grid * grid) {
-    customLevelConfig.value.min = grid * grid
-  }
-
   localStorage.setItem('customLevelConfig', JSON.stringify({ size, ...customLevelConfig.value }))
 
-  router.push('/game/custom')
+  toastTimeout = window.setTimeout(() => {
+    useToast($t('save-success', '设置成功'))
+    router.push('/game/custom')
+  }, 300)
 }
 </script>
 
@@ -64,18 +75,18 @@ function saveCustomLevelConfig() {
       </h2>
 
       <div class="mb-4">
-        <span class="text-sm">{{ $t('number-of-grids', '网格数量') }}<i class="text-gray-500">（X * Y）</i></span>
-        <Input v-model.number="customLevelConfig.grid" type="number" maxlength="2" />
+        <span class="text-sm">{{ $t('number-of-grids', '网格数量') }}<span class="text-gray-500">&nbsp;(X * Y)</span></span>
+        <Input v-model.number="customLevelConfig.grid" type="number" min="1" max="99" />
       </div>
 
       <div class="mb-4">
         <span class="text-sm">{{ $t('minimum-blocks', '最小生成方块数') }}</span>
-        <Input v-model.number="customLevelConfig.min" type="number" maxlength="2" />
+        <Input v-model.number="customLevelConfig.min" type="number" min="1" max="99" />
       </div>
 
       <div class="mb-4">
-        <span class="text-sm">{{ $t('maximum-blocks', '最大生成方块数') }}</span>
-        <Input v-model.number="customLevelConfig.max" type="number" maxlength="2" />
+        <span class="text-sm">{{ $t('maximum-blocks', '最大生成方块数') }}<span class="text-gray-500">&nbsp;(MAX = {{ customLevelConfig.grid * customLevelConfig.grid }})</span></span>
+        <Input v-model.number="customLevelConfig.max" type="number" min="1" max="99" />
       </div>
 
       <!-- <div class="mb-4">
@@ -89,12 +100,12 @@ function saveCustomLevelConfig() {
       </div>
 
       <div class="mb-8">
-        <span class="text-sm">{{ $t('memory-time', '每回合开始前的记忆时间') }}<i class="text-gray-500">（{{ $t('second', '秒') }}）</i></span>
-        <Input v-model.number="customLevelConfig.internal" type="number" maxlength="2" />
+        <span class="text-sm text-balance">{{ $t('memory-time', '每回合开始前的记忆时间') }}<span class="text-gray-500">({{ $t('second', '秒') }})</span></span>
+        <Input v-model.number="customLevelConfig.internal" type="number" min="1" max="99" />
       </div>
 
       <Button type="primary">
-        {{ $t('setup-completed', '设置完成，开始游戏') }}
+        {{ $t('setup-completed', '开始游戏') }}
       </Button>
     </form>
   </div>

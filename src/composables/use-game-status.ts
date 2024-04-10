@@ -22,8 +22,7 @@ export function useGameStatus() {
         // 如果最小数量大于最大数量，交换两者
         if (levelConfig.min > levelConfig.max) {
           // @ts-expect-error let me do this!
-          // eslint-disable-next-line style/max-statements-per-line
-          min = levelConfig.max; max = levelConfig.min
+          [levelConfig.min, levelConfig.max] = [levelConfig.max, levelConfig.min]
         }
       }
     }

@@ -7,7 +7,8 @@
   "maximum-blocks": "Maximum number of generated blocks",
   "hp": "HP",
   "second": "second",
-  "setup-completed": "Setup completed, start the game",
+  "save-success": "Save success",
+  "setup-completed": "Start the game",
 
   "score": "Score",
   "start-time": "Start time",
