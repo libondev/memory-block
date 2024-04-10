@@ -6,11 +6,15 @@ const { $t } = inject(i18NInjectionKey)!
 
 const router = useRouter()
 
+const alwaysFillFull = ref(false)
+
 const customLevelConfig = ref((() => {
   const cache = localStorage.getItem('customLevelConfig')
 
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const { size, ...configValue } = Object.assign({}, LEVEL_GRIDS.custom, cache ? JSON.parse(cache) : {})
+  const { size, fillFull, ...configValue } = Object.assign({ fillFull: false }, LEVEL_GRIDS.custom, cache ? JSON.parse(cache) : {})
+
+  alwaysFillFull.value = fillFull
 
   return configValue
 })())
@@ -58,7 +62,11 @@ function saveCustomLevelConfig() {
     [customLevelConfig.value.max, customLevelConfig.value.min] = [customLevelConfig.value.min, customLevelConfig.value.max]
   }
 
-  localStorage.setItem('customLevelConfig', JSON.stringify({ size, ...customLevelConfig.value }))
+  localStorage.setItem('customLevelConfig', JSON.stringify({
+    size,
+    fillFull: alwaysFillFull.value,
+    ...customLevelConfig.value,
+  }))
 
   toastTimeout = window.setTimeout(() => {
     useToast($t('save-success', '设置成功'))
@@ -84,9 +92,16 @@ function saveCustomLevelConfig() {
         <Input v-model.number="customLevelConfig.min" type="number" min="1" max="99" />
       </div>
 
-      <div class="mb-4">
-        <span class="text-sm">{{ $t('maximum-blocks', '最大生成方块数') }}<span class="text-gray-500">&nbsp;(MAX = {{ customLevelConfig.grid * customLevelConfig.grid }})</span></span>
-        <Input v-model.number="customLevelConfig.max" type="number" min="1" max="99" />
+      <div class="mb-4 flex items-center">
+        <div>
+          <span class="text-sm">{{ $t('maximum-blocks', '最大生成方块数') }}<span class="text-gray-500">&nbsp;(MAX = {{ customLevelConfig.grid * customLevelConfig.grid }})</span></span>
+          <Input v-model.number="customLevelConfig.max" type="number" maxlength="2" />
+        </div>
+
+        <div class="px-2 text-center">
+          <span class="text-sm">{{ $t('1', '始终填满') }}</span>
+          <Switch v-model="alwaysFillFull" class="translate-y-[3px]" />
+        </div>
       </div>
 
       <!-- <div class="mb-4">

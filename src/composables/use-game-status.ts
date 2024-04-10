@@ -42,12 +42,12 @@ export function useGameStatus() {
 
   // 生成目标方块
   function generateRandomTargetBlock() {
-    const { min, max, grid } = levelConfig
+    const { min, max, grid, fillFull } = levelConfig
 
     const target = new Set<string>()
 
-    // 如果最大数量超过了格子数，则重置为格子数
-    if (max >= grid * grid) {
+    // 如果设置了【始终填满】则将所有格子高亮
+    if (fillFull) {
       for (let x = 0; x < grid; x++) {
         for (let y = 0; y < grid; y++) {
           target.add(`${x},${y}`)

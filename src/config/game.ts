@@ -14,6 +14,7 @@ export const LEVEL_GRIDS = {
     rate: 1,
     health: 3,
     internal: 2,
+    fillFull: false,
     size: 'size-12',
   },
 
@@ -24,6 +25,7 @@ export const LEVEL_GRIDS = {
     rate: 1.2,
     health: 3,
     internal: 3,
+    fillFull: false,
     size: 'size-11',
   },
 
@@ -34,6 +36,7 @@ export const LEVEL_GRIDS = {
     rate: 1.5,
     health: 2,
     internal: 2,
+    fillFull: false,
     size: 'size-10',
   },
 
@@ -44,6 +47,7 @@ export const LEVEL_GRIDS = {
     rate: 1.8,
     health: 2,
     internal: 2,
+    fillFull: false,
     size: 'size-8',
   },
 
@@ -54,6 +58,7 @@ export const LEVEL_GRIDS = {
     rate: 1,
     health: 1,
     internal: 2,
+    fillFull: false,
     size: 'size-12',
   },
 } as const
