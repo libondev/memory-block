@@ -13,7 +13,7 @@ const { lang, setLanguage, $t } = inject(i18NInjectionKey)!
 </script>
 
 <template>
-  <header class="mb-4 px-4 sm:px-6 border-b dark:border-gray-700 flex items-center justify-between">
+  <header class="relation z-10 mb-4 px-3 sm:px-6 border-b dark:border-gray-700 bg-[hsl(var(--background))] flex items-center justify-between">
     <h1 class="text-lg font-medium">
       <RouterLink to="/">
         {{ $t('memory-block', 'Memory Block') }}
