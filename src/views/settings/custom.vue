@@ -16,7 +16,7 @@ const customLevelConfig = ref((() => {
 })())
 
 function saveCustomLevelConfig() {
-  const illegalValue = Object.values(customLevelConfig.value).find(v => typeof v !== 'number' || v <= 0 || !Number.isInteger(v))
+  const illegalValue = Object.values<number>(customLevelConfig.value).find(v => typeof v !== 'number' || v <= 0 || !Number.isInteger(v))
 
   if (illegalValue) {
     useToastError($t('configuration-integer-gt', '配置只能为大于 1 的整数'))
@@ -58,24 +58,24 @@ function saveCustomLevelConfig() {
 
 <template>
   <div class="flex h-full py-16 items-center justify-center overflow-auto">
-    <form class="w-72" @submit.prevent="saveCustomLevelConfig">
+    <form class="w-72" @submit.prevent="saveCustomLevelConfig()">
       <h2 class="text-xl mb-2">
         {{ $t('custom-levels', '自定义关卡') }}
       </h2>
 
       <div class="mb-4">
         <span class="text-sm">{{ $t('number-of-grids', '网格数量') }}<i class="text-gray-500">（X * Y）</i></span>
-        <Input v-model.number="customLevelConfig.grid" maxlength="2" />
+        <Input v-model.number="customLevelConfig.grid" type="number" maxlength="2" />
       </div>
 
       <div class="mb-4">
         <span class="text-sm">{{ $t('minimum-blocks', '最小生成方块数') }}</span>
-        <Input v-model.number="customLevelConfig.min" maxlength="2" />
+        <Input v-model.number="customLevelConfig.min" type="number" maxlength="2" />
       </div>
 
       <div class="mb-4">
         <span class="text-sm">{{ $t('maximum-blocks', '最大生成方块数') }}</span>
-        <Input v-model.number="customLevelConfig.max" maxlength="2" />
+        <Input v-model.number="customLevelConfig.max" type="number" maxlength="2" />
       </div>
 
       <!-- <div class="mb-4">
@@ -85,12 +85,12 @@ function saveCustomLevelConfig() {
 
       <div class="mb-4">
         <span class="text-sm">{{ $t('hp', '生命值') }}</span>
-        <Input v-model.number="customLevelConfig.health" maxlength="15" />
+        <Input v-model.number="customLevelConfig.health" type="number" maxlength="15" />
       </div>
 
       <div class="mb-8">
         <span class="text-sm">{{ $t('memory-time', '每回合开始前的记忆时间') }}<i class="text-gray-500">（{{ $t('second', '秒') }}）</i></span>
-        <Input v-model.number="customLevelConfig.internal" maxlength="2" />
+        <Input v-model.number="customLevelConfig.internal" type="number" maxlength="2" />
       </div>
 
       <Button type="primary">
