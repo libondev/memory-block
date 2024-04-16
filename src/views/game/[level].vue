@@ -6,7 +6,10 @@ import { name } from '@/../package.json'
 import { useGameStatus } from '@/composables/use-game-status'
 import { useGameScore } from '@/composables/use-game-score'
 import { useCheckedBlocks } from '@/composables/use-checked-blocks'
-import { setHighestScoreInHistory } from '@/composables/use-local-cache'
+import {
+  setGameMoney,
+  setHighestScoreInHistory,
+} from '@/composables/use-local-cache'
 import { i18NInjectionKey } from '@/composables/use-i18n'
 
 type GameStatus = 'over' | 'pause' | 'playing' | 'previewing'
@@ -46,6 +49,7 @@ const {
 const {
   timestamp,
   gameScore,
+  gameMoney,
   deltaScore,
   highestScore,
   showDeltaScore,
@@ -88,6 +92,7 @@ function onFinishedPreviewCountdown() {
   setGameStatus('playing')
 }
 
+// 开始游戏
 function startGame() {
   generateRandomTargetBlock()
   updateHighestScoreStatus(level)
@@ -106,6 +111,7 @@ function startGame() {
   startPreviewCountdown()
 }
 
+// 检查游戏结果
 function onCheckResult() {
   // 如果游戏已结束或者正在预览中
   if (gameStatus.value.over || gameStatus.value.previewing) {
@@ -164,10 +170,12 @@ function gameOver() {
 
   useToastError($t('game-over', '游戏结束'))
 
+  setGameMoney(gameMoney.value += gameScore.value)
+
   // 如果分数比历史最高分高, 更新历史最高分, 并播放纸屑
   if (gameScore.value > highestScore.value) {
-    highestScore.value = gameScore.value
     showScoreBadge.value = true
+    highestScore.value = gameScore.value
 
     playOverSound()
     confetti({ spread: 120, particleCount: 300 })
@@ -298,7 +306,7 @@ onBeforeUnmount(() => {
         </template>
       </h2>
 
-      <div class="mx-auto my-4 font-mono flex flex-wrap items-center justify-center leading-none gap-4 max-w-96">
+      <div class="mx-auto my-4 font-mono flex flex-wrap items-center justify-center leading-none gap-2 max-w-96">
         <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
           <i class="i-solar-stop-bold text-lg mr-1 text-emerald-500" />
           <span class="flex-1 text-center">{{ checkedNumber }}/{{ targetBlocks.size }}</span>
@@ -306,7 +314,7 @@ onBeforeUnmount(() => {
 
         <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
           <i class="i-solar-clock-circle-bold-duotone text-lg mr-1 opacity-70" />
-          <span class="flex-1 text-center">{{ timestamp }}s</span>
+          <span class="flex-1 text-center">{{ timestamp }}</span>
         </div>
 
         <div class="flex items-center h-8 px-2 pt-0.5 rounded-full border border-input bg-slate-100 dark:bg-slate-800">
@@ -328,11 +336,20 @@ onBeforeUnmount(() => {
           <span v-else class="flex-1 text-center">{{ gameHealth >= 99 ? '99+' : gameHealth }}</span>
         </div>
 
-        <!-- 练习模式不展示最高分字段 -->
-        <div v-if="level !== 'custom'" class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
-          <i class="i-solar-ranking-bold-duotone text-lg translate-y-[-1.5px] mr-1 text-yellow-400" />
-          <span class="flex-1 text-center max-w-80 truncate">{{ highestScore }}</span>
-        </div>
+        <!-- 练习模式不展示最高分字段/也不记录积分 -->
+        <template v-if="level !== 'custom'">
+          <!-- 积分货币 -->
+          <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
+            <i class="i-solar-chat-round-money-bold text-lg mr-1 text-yellow-400" />
+            <span class="flex-1 text-center max-w-80 truncate">{{ gameMoney }}</span>
+          </div>
+
+          <!-- 历史最高分 -->
+          <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
+            <i class="i-solar-ranking-bold-duotone text-lg mr-1 text-orange-400 translate-x-0.5" />
+            <span class="flex-1 text-center max-w-80 truncate">{{ highestScore }}</span>
+          </div>
+        </template>
       </div>
 
       <div class="relative mb-4 text-5xl text-center">
@@ -356,7 +373,7 @@ onBeforeUnmount(() => {
         @change="onCheckboxChange"
       />
 
-      <div class="mt-12 mb-20  gap-4 flex justify-center">
+      <div class="mt-12 mb-20 gap-4 flex justify-center">
         <Button
           :disabled="gameStatus.previewing || gameStatus.pause"
           @click="onResetBlocks"

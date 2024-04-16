@@ -1,5 +1,5 @@
 import type { GameLevel, LEVEL_GRIDS } from '@/config/game'
-import { getHighestScoreInHistory } from '@/composables/use-local-cache'
+import { getGameMoney, getHighestScoreInHistory } from '@/composables/use-local-cache'
 
 export function useGameScore(
   { rate: multiplier }: typeof LEVEL_GRIDS[GameLevel],
@@ -9,6 +9,7 @@ export function useGameScore(
 
   const timestamp = shallowRef(0)
   const gameScore = shallowRef(0)
+  const gameMoney = shallowRef(0)
   const deltaScore = shallowRef(0)
   const showDeltaScore = shallowRef(false)
 
@@ -59,17 +60,22 @@ export function useGameScore(
 
   // 更新历史最高分状态
   function updateHighestScoreStatus(level: GameLevel) {
-    showScoreBadge.value = false
+    onEndHideDeltaScore()
 
     getHighestScoreInHistory(level).then((v) => {
-    // 更新历史最高分
+      // 更新历史最高分
       highestScore.value = v || 0
+    })
+
+    getGameMoney().then((money) => {
+      gameMoney.value = money || 0
     })
   }
 
   return {
     timestamp,
     gameScore,
+    gameMoney,
     deltaScore,
     highestScore,
     showDeltaScore,
