@@ -1,4 +1,13 @@
-# Memory Block（记忆方块）
+<div align="center">
+  <img src="./res/logo.svg" />
+
+  <h3>Memory Block（记忆方块）</h3>
+</div>
+
+---
+
+## 在线游玩
+对，你现在就可以立马玩到这款有趣的 [Memory Block](https://libondev.github.io/memory-block/) 小游戏（确信！）
 
 ## 游戏规则
 - 选择游戏难度
