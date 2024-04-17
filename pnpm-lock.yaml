@@ -8,6 +8,9 @@ dependencies:
   '@headlessui/vue':
     specifier: ^1.7.19
     version: 1.7.19(vue@3.4.21)
+  '@iconify-json/game-icons':
+    specifier: ^1.1.7
+    version: 1.1.7
   '@vueuse/core':
     specifier: ^10.9.0
     version: 10.9.0(vue@3.4.21)
@@ -865,6 +868,12 @@ packages:
       '@iconify/types': 2.0.0
     dev: true
 
+  /@iconify-json/game-icons@1.1.7:
+    resolution: {integrity: sha512-qZlG+WtqTZjYvpwTkS8SquPmCMLIz4F183twG/aGF0Q85udUZaxRvEkG+4rUHVL+U6Mv5KnlqTTweCVUMqXCWA==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: false
+
   /@iconify-json/solar@1.1.9:
     resolution: {integrity: sha512-BcWzZqA02BiQduYizqU/J4v4RNs0MkjZUGpMbejpozH8YQSt3+S/LfV6zfVRonx/2DhXTVSqiLa1abDRAZtojQ==}
     dependencies:
@@ -873,7 +882,6 @@ packages:
 
   /@iconify/types@2.0.0:
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
-    dev: true
 
   /@iconify/utils@2.1.22:
     resolution: {integrity: sha512-6UHVzTVXmvO8uS6xFF+L/QTSpTzA/JZxtgU+KYGFyDYMEObZ1bu/b5l+zNJjHy+0leWjHI+C0pXlzGvv3oXZMA==}
