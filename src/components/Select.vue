@@ -25,10 +25,8 @@ const modelValue = defineModel < string > ()
 
 <template>
   <Listbox v-model="modelValue" as="div" class="relative h-10">
-    <ListboxButton>
-      <span class="inline-flex truncate items-center justify-center px-3 h-[31px] select-none rounded-lg text-sm shadow-sm dark:bg-gray-700 border-[rgba(0,0,0,.2)] border-x-[1.5px] border-t-[1.5px] border-b-4 active:border-b-[1.5px] active:h-[26px] active:translate-y-1 active:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1">
-        {{ optionsMap[modelValue!] }}
-      </span>
+    <ListboxButton class="inline-flex truncate items-center justify-center px-2 h-[31px] select-none rounded-lg text-sm shadow-sm dark:bg-gray-700 border-[rgba(0,0,0,.2)] border-x-[1.5px] border-t-[1.5px] border-b-4 active:border-b-[1.5px] active:h-[26px] active:translate-y-1 active:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1">
+      {{ optionsMap[modelValue!] }}
     </ListboxButton>
 
     <transition leave-active-class="transition duration-100 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">

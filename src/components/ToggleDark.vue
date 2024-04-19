@@ -9,7 +9,7 @@ const toggleDark = useToggle(isDark)
 </script>
 
 <template>
-  <Button @click="toggleDark()">
+  <Button btn-class-name="!px-2" @click="toggleDark()">
     <i class="block pointer-events-none" :class="isDark ? 'i-solar-moon-bold' : 'i-solar-sun-bold'" />
   </Button>
 </template>
