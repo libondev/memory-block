@@ -53,7 +53,7 @@ export function getGameGoods() {
 
 // 更新游戏道具数量
 export function setGameGoods(goods: GameGood[]) {
-  localforage.setItem(GAME_GOODS_KEY, toRaw(goods))
+  localforage.setItem(GAME_GOODS_KEY, goods.map(toRaw))
 }
 
 export function appendRecordToStore(record: RecordItem) {
