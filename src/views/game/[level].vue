@@ -271,7 +271,34 @@ function onBoardKeyDown({ code }: KeyboardEvent) {
   KEY_EVENTS_MAP[code as keyof typeof KEY_EVENTS_MAP]?.()
 }
 
+// 根据当前屏幕大小设置游戏区域的缩放比例
+function setGameGridScale() {
+  // 这个设置只执行一次，重新声明一个 ref 保存 dom 代价有点太大了
+  const elGrid = document.querySelector('.game-grid') as HTMLDivElement
+
+  if (!elGrid) {
+    return
+  }
+
+  const { width } = elGrid.getBoundingClientRect()
+  const GAME_PADDING = 20
+  const MAX_GAME_WIDTH = 410
+
+  // 因为网格的宽高一样，所以只需要计算宽度即可
+  if (width <= MAX_GAME_WIDTH) {
+    return
+  }
+
+  // 计算缩放比例，将网格缩放到最大宽度 - 预设的游戏边距
+  const scale = MAX_GAME_WIDTH / (width - GAME_PADDING)
+
+  elGrid.style.height = `${width * scale}px`
+  elGrid.style.transform = `scale(${scale})`
+  elGrid.style.transformOrigin = `top center`
+}
+
 onMounted(() => {
+  setGameGridScale()
   startGame()
   onRestoreLocalStatus()
 
@@ -298,7 +325,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main class="h-full flex items-center justify-center">
+  <main class="h-full flex items-center justify-center overflow-hidden">
     <div>
       <h2 class="w-full flex items-center justify-center text-xl font-mono">
         {{ gameStatus.previewing ? $t('remember-block-locations', '请记住以下方块位置') : gameStatus.over ? $t('game-over', '游戏结束') : $t('start', '游戏开始') }}<template v-if="countdown">
