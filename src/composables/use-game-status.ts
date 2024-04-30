@@ -38,7 +38,7 @@ export function useGameStatus() {
 
   // 当前生命值
   const gameHealth = shallowRef(levelConfig.health)
-  const gameHealthList = computed(() => Array.from({ length: levelConfig.health + 1 }, (_, i) => i))
+  const gameHealthList = computed(() => Array.from({ length: levelConfig.health + gameHealth.value }, (_, i) => i))
 
   // 生成目标方块
   function generateRandomTargetBlock() {

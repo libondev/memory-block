@@ -103,8 +103,18 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
   /**
    * 匹配所有选中的是否达成胜利条件
    */
-  function getAllCheckedResult() {
+  function getAllCheckedResult(ignoreErrorProp: Ref<number>) {
     const checkedBlocks = getAllCheckedBlocks()
+
+    // 如果道具的数量
+    if (ignoreErrorProp.value >= 0) {
+      ignoreErrorProp.value -= 1
+
+      return {
+        matched: true,
+        blocks: checkedBlocks,
+      }
+    }
 
     // 如果选中的数量和生成的数量不相等
     if (checkedBlocks.length !== blocks.value.size) {

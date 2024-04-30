@@ -2,8 +2,8 @@
 
 export const GAME_GOODS = [
   {
-    id: 'regenerate',
-    name: '再来一次',
+    id: 'REGENERATE',
+    name: '重新开始',
     icon: 'i-game-icons-perspective-dice-six-faces-random',
     description: '说不上来为什么，但总感觉哪里不对劲（重新生成方块数量及位置）',
     color: 'text-orange-600',
@@ -11,7 +11,7 @@ export const GAME_GOODS = [
     count: 0,
   },
   {
-    id: 'ignoreError',
+    id: 'IGNORE_ERROR',
     name: '走个后门',
     icon: 'i-game-icons-broken-shield',
     description: '尽情犯错吧，但这可不是长久之计（可以选择任意方块作为结果）',
@@ -20,16 +20,16 @@ export const GAME_GOODS = [
     count: 0,
   },
   {
-    id: 'lookAgain',
-    name: '再看一遍',
+    id: 'LOOK_AGAIN',
+    name: '完好如初',
     icon: 'i-game-icons-brain',
-    description: '刚刚发生了什么？（增加 5 秒预览时间【仅在预览模式可用】）',
+    description: '刚刚发生了什么？（预览极端重新开始本回合）',
     color: 'text-indigo-600',
     price: 500,
     count: 0,
   },
   {
-    id: 'restoreLife',
+    id: 'RESTORE_LIFE',
     name: '打个补丁',
     icon: 'i-game-icons-arm-bandage',
     description: '休息一下，做些你想做的事（回复 1 点生命值）',
