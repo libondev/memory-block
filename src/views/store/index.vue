@@ -68,7 +68,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-full w-full max-w-[700px] px-4 mx-auto overflow-auto">
+  <div class="pt-4 h-full w-full max-w-[700px] px-4 mx-auto overflow-auto">
     <div class="w-full flex items-center justify-center mt-4 mb-8 text-3xl font-mono">
       <i class="i-solar-chat-round-money-bold mr-1.5 text-yellow-400" />
       {{ gameMoney }}
