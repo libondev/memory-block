@@ -282,7 +282,9 @@ function setGameGridScale() {
 
   const { width } = elGrid.getBoundingClientRect()
   const GAME_PADDING = 20
-  const MAX_GAME_WIDTH = 410
+
+  // 移动端和PC端设置不同的宽度大小, 移动端最大宽度为 屏幕宽度，PC端最大宽度为 410
+  const MAX_GAME_WIDTH = 'ontouchstart' in window ? window.innerWidth : 420
 
   // 因为网格的宽高一样，所以只需要计算宽度即可
   if (width <= MAX_GAME_WIDTH) {
@@ -290,7 +292,7 @@ function setGameGridScale() {
   }
 
   // 计算缩放比例，将网格缩放到最大宽度 - 预设的游戏边距
-  const scale = MAX_GAME_WIDTH / (width - GAME_PADDING)
+  const scale = (MAX_GAME_WIDTH - GAME_PADDING) / width
 
   elGrid.style.height = `${width * scale}px`
   elGrid.style.transform = `scale(${scale})`
@@ -325,15 +327,15 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main class="h-full flex items-center justify-center overflow-hidden">
-    <div>
+  <main class="pt-4 h-full flex items-center justify-center">
+    <div class="overflow-hidden">
       <h2 class="w-full flex items-center justify-center text-xl font-mono">
         {{ gameStatus.previewing ? $t('remember-block-locations', '请记住以下方块位置') : gameStatus.over ? $t('game-over', '游戏结束') : $t('start', '游戏开始') }}<template v-if="countdown">
           ({{ countdown }})
         </template>
       </h2>
 
-      <div class="mx-auto my-4 font-mono flex flex-wrap items-center justify-center leading-none gap-2 max-w-96">
+      <div class="mx-auto my-2 font-mono flex flex-wrap items-center justify-center leading-none gap-2 max-w-96">
         <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
           <i class="i-solar-stop-bold text-lg mr-1 text-emerald-500" />
           <span class="flex-1 text-center">{{ checkedNumber }}/{{ targetBlocks.size }}</span>
@@ -341,7 +343,7 @@ onBeforeUnmount(() => {
 
         <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
           <i class="i-solar-clock-circle-bold-duotone text-lg mr-1 opacity-70" />
-          <span class="flex-1 text-center">{{ timestamp }}</span>
+          <span class="flex-1 text-center">{{ timestamp }}s</span>
         </div>
 
         <div class="flex items-center h-8 px-2 pt-0.5 rounded-full border border-input bg-slate-100 dark:bg-slate-800">
@@ -379,7 +381,7 @@ onBeforeUnmount(() => {
         </template>
       </div>
 
-      <div class="relative mb-4 text-5xl text-center">
+      <div class="relative mb-2 text-5xl text-center">
         <span class="z-10 font-mono font-medium">{{ formatScore(gameScore) }}</span>
 
         <span v-if="showScoreBadge" class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500">BEST</span>

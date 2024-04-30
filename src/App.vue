@@ -7,7 +7,7 @@ useI18N()
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
+  <div class="h-full flex flex-col overflow-hidden">
     <NavHeader />
 
     <RouterView />

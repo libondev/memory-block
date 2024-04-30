@@ -13,7 +13,7 @@ const { lang, setLanguage, $t } = inject(i18NInjectionKey)!
 </script>
 
 <template>
-  <header class="relation z-10 mb-4 px-3 sm:px-6 border-b dark:border-gray-700 bg-[hsl(var(--background))] flex items-center justify-between">
+  <header class="relation z-10 px-3 sm:px-6 border-b dark:border-gray-700 bg-[hsl(var(--background))] flex items-center justify-between">
     <h1 class="flex items-center text-lg font-medium">
       <img class="inline-block size-6 mr-0.5 translate-y-[1px]" width="24" src="/res/logo.svg" alt="">
       <RouterLink to="/" class="truncate">
