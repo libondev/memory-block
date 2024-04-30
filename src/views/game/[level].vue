@@ -11,10 +11,14 @@ import {
   setHighestScoreInHistory,
 } from '@/composables/use-local-cache'
 import { i18NInjectionKey } from '@/composables/use-i18n'
+import { isMobile } from '@/utils/shared/index'
 
 type GameStatus = 'over' | 'pause' | 'playing' | 'previewing'
 
 const { $t } = inject(i18NInjectionKey)!
+
+// 移动端和PC端设置不同的宽度大小, 移动端最大宽度为屏幕宽度
+const MAX_GAME_WIDTH = isMobile ? window.innerWidth : 450
 
 const _gameState = shallowRef<GameStatus>('previewing')
 
@@ -281,22 +285,17 @@ function setGameGridScale() {
   }
 
   const { width } = elGrid.getBoundingClientRect()
-  const GAME_PADDING = 20
 
-  // 移动端和PC端设置不同的宽度大小, 移动端最大宽度为 屏幕宽度，PC端最大宽度为 410
-  const MAX_GAME_WIDTH = 'ontouchstart' in window ? window.innerWidth : 420
-
-  // 因为网格的宽高一样，所以只需要计算宽度即可
   if (width <= MAX_GAME_WIDTH) {
     return
   }
 
   // 计算缩放比例，将网格缩放到最大宽度 - 预设的游戏边距
-  const scale = (MAX_GAME_WIDTH - GAME_PADDING) / width
+  const scale = MAX_GAME_WIDTH / width
 
   elGrid.style.height = `${width * scale}px`
   elGrid.style.transform = `scale(${scale})`
-  elGrid.style.transformOrigin = `top center`
+  elGrid.style.transformOrigin = isMobile ? `0 0` : 'top center'
 }
 
 onMounted(() => {

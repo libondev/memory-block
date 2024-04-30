@@ -46,3 +46,5 @@ export const prefersDarkColorScheme = () => window && window.matchMedia && windo
  * @param object 要检测的对象
  */
 export const isEmptyObject = (object: object) => Reflect.ownKeys(object).length === 0
+
+export const isMobile = 'ontouchstart' in window
