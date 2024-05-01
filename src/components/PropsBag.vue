@@ -66,6 +66,11 @@ onMounted(async () => {
             {{ good.count }}
           </span>
         </li>
+        <li v-if="goods.length === 0" class="text-center text-sm px-1 text-gray-500">
+          暂无道具,<RouterLink to="/store" class="text-primary font-medium">
+            去购买
+          </RouterLink>
+        </li>
       </PopoverPanel>
     </Transition>
   </Popover>
