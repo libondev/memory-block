@@ -23,7 +23,7 @@ export const GAME_GOODS = [
     id: 'LOOK_AGAIN',
     name: '完好如初',
     icon: 'i-game-icons-brain',
-    description: '刚刚发生了什么？（预览极端重新开始本回合）',
+    description: '刚刚发生了什么？（回到预览阶段重新开始本回合）',
     color: 'text-indigo-600',
     price: 500,
     count: 0,
