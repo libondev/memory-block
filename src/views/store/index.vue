@@ -68,10 +68,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="pt-4 h-full w-full max-w-[700px] px-4 mx-auto overflow-auto">
-    <div class="w-full flex items-center justify-center mt-4 mb-8 text-3xl font-mono">
-      <i class="i-solar-chat-round-money-bold mr-1.5 text-yellow-400" />
-      {{ gameMoney }}
+  <div class="h-full w-full max-w-[700px] px-4 mx-auto overflow-auto">
+    <div class="w-full flex items-center justify-center mt-12 mb-8 font-mono">
+      <i class="i-solar-chat-round-money-bold mr-1.5 text-3xl text-yellow-400" />
+      <span class="text-[45px]">{{ gameMoney }}</span>
     </div>
 
     <ul class="flex flex-wrap items-center gap-4 w-full">

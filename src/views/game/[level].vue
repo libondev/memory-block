@@ -340,7 +340,7 @@ onBeforeUnmount(() => {
         </template>
       </h2>
 
-      <div class="mx-auto my-2 font-mono flex flex-wrap items-center justify-center leading-none gap-2 max-w-96">
+      <div class="mx-auto my-3 font-mono flex flex-wrap items-center justify-center leading-none gap-2 max-w-96">
         <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
           <i class="i-solar-stop-bold text-lg mr-1 text-emerald-500" />
           <span class="flex-1 text-center">{{ checkedNumber }}/{{ targetBlocks.size }}</span>
@@ -379,7 +379,7 @@ onBeforeUnmount(() => {
         </template>
       </div>
 
-      <div class="relative mb-2 text-5xl text-center">
+      <div class="relative mb-3 text-5xl text-center">
         <span class="z-10 font-mono font-medium">{{ formatScore(gameScore) }}</span>
 
         <span

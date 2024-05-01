@@ -50,7 +50,7 @@ export const isEmptyObject = (object: object) => Reflect.ownKeys(object).length 
 // 千分位格式化分数
 export function formatScore(score: number) {
   const numStr = score.toString()
-  const reg = /\B(?=(\d{3})+(?!\d))/g
+  const reg = /\B(?=(\d{4})+(?!\d))/g
   return numStr.replace(reg, ',')
 }
 
