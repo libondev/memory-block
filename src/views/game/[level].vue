@@ -11,10 +11,15 @@ import {
   setHighestScoreInHistory,
 } from '@/composables/use-local-cache'
 import { i18NInjectionKey } from '@/composables/use-i18n'
+import { formatScore, isMobile } from '@/utils/shared/index'
+import type { GameGood } from '@/config/goods.ts'
 
 type GameStatus = 'over' | 'pause' | 'playing' | 'previewing'
 
 const { $t } = inject(i18NInjectionKey)!
+
+// 移动端和PC端设置不同的宽度大小, 移动端最大宽度为屏幕宽度
+const MAX_GAME_WIDTH = isMobile ? window.innerWidth : 450
 
 const _gameState = shallowRef<GameStatus>('previewing')
 
@@ -84,6 +89,9 @@ const {
   onFinished: onFinishedPreviewCountdown,
 })
 
+// 当前忽略错误的道具还有多少个正在生效
+const ignoreErrorPropCounts = shallowRef(0)
+
 // 当预览倒计时结束时开始游戏计分, 取消所有预览块, 并设置游戏状态
 function onFinishedPreviewCountdown() {
   // 开始计分计时
@@ -118,7 +126,7 @@ function onCheckResult() {
     return
   }
 
-  const { matched, blocks } = getAllCheckedResult()
+  const { matched, blocks } = getAllCheckedResult(ignoreErrorPropCounts)
 
   if (!matched && !blocks.length) {
     useToast($t('select-one-first', '请先选择至少一个方块'))
@@ -199,13 +207,6 @@ function onCheckboxChange(e: Event) {
   setCheckedNumber(checkedNumber.value += (target.checked ? 1 : -1))
 }
 
-// 千分位格式化分数
-function formatScore(score: number) {
-  const numStr = score.toString()
-  const reg = /\B(?=(\d{3})+(?!\d))/g
-  return numStr.replace(reg, ',')
-}
-
 // 当浏览器游戏标签不可见时暂停计时
 function onGameTabVisibilityChange() {
   if (document.visibilityState === 'hidden') {
@@ -232,11 +233,12 @@ function onRestoreLocalStatus() {
   }
 
   try {
-    const { _score, _health, _blocks } = JSON.parse(localCache)
+    const { _score, _health, _blocks, _ignoreError } = JSON.parse(localCache)
 
     gameScore.value = _score
     gameHealth.value = _health
     targetBlocks.value = new Set(_blocks)
+    ignoreErrorPropCounts.value = Number(_ignoreError)
 
     uncheckAllBlocks()
     checkedTargetBlock()
@@ -258,17 +260,8 @@ function onPageHideSaveLocalStatus() {
     _score: gameScore.value,
     _health: gameHealth.value,
     _blocks: [...targetBlocks.value],
+    _ignoreError: ignoreErrorPropCounts.value,
   }))
-}
-
-// PC 端监听键盘按下事件
-function onBoardKeyDown({ code }: KeyboardEvent) {
-  const KEY_EVENTS_MAP = {
-    Enter: onCheckResult,
-    Delete: onResetBlocks,
-  } as const
-
-  KEY_EVENTS_MAP[code as keyof typeof KEY_EVENTS_MAP]?.()
 }
 
 // 根据当前屏幕大小设置游戏区域的缩放比例
@@ -281,33 +274,48 @@ function setGameGridScale() {
   }
 
   const { width } = elGrid.getBoundingClientRect()
-  const GAME_PADDING = 20
 
-  // 移动端和PC端设置不同的宽度大小, 移动端最大宽度为 屏幕宽度，PC端最大宽度为 410
-  const MAX_GAME_WIDTH = 'ontouchstart' in window ? window.innerWidth : 420
-
-  // 因为网格的宽高一样，所以只需要计算宽度即可
   if (width <= MAX_GAME_WIDTH) {
     return
   }
 
   // 计算缩放比例，将网格缩放到最大宽度 - 预设的游戏边距
-  const scale = (MAX_GAME_WIDTH - GAME_PADDING) / width
+  const scale = MAX_GAME_WIDTH / width
 
-  elGrid.style.height = `${width * scale}px`
-  elGrid.style.transform = `scale(${scale})`
-  elGrid.style.transformOrigin = `top center`
+  elGrid.style.cssText = `height:${width * scale}px;transform:scale(${scale});transform-origin:${isMobile ? '0 0' : 'top center'}`
+}
+
+// 使用道具
+function onUseProps({ id }: GameGood) {
+  switch (id) {
+    // 再来一次
+    case 'REGENERATE':
+      startGame()
+      break
+    // 忽略本次提交选择的错误
+    case 'IGNORE_ERROR':
+      ignoreErrorPropCounts.value += 1
+      break
+    // 再看一次
+    case 'LOOK_AGAIN':
+      setGameStatus('previewing')
+      checkedTargetBlock()
+      resetPrewiewCountdown()
+      startPreviewCountdown()
+      break
+    // 恢复一点生命值
+    case 'RESTORE_LIFE':
+      gameHealth.value += 1
+      break
+    default:
+      break
+  }
 }
 
 onMounted(() => {
-  setGameGridScale()
   startGame()
+  setGameGridScale()
   onRestoreLocalStatus()
-
-  // 非移动端增加键盘事件
-  if (!window.ontouchstart) {
-    document.addEventListener('keydown', onBoardKeyDown)
-  }
 
   document.addEventListener('visibilitychange', onGameTabVisibilityChange)
   window.addEventListener('pagehide', onPageHideSaveLocalStatus, { once: true })
@@ -315,10 +323,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   stopRecording()
-
-  if (!window.ontouchstart) {
-    document.removeEventListener('keydown', onBoardKeyDown)
-  }
 
   // 如果是退出了当前页面再刷新的则不保存状态
   window.removeEventListener('pagehide', onPageHideSaveLocalStatus)
@@ -328,9 +332,10 @@ onBeforeUnmount(() => {
 
 <template>
   <main class="pt-4 h-full flex items-center justify-center">
-    <div class="overflow-hidden">
+    <div>
       <h2 class="w-full flex items-center justify-center text-xl font-mono">
-        {{ gameStatus.previewing ? $t('remember-block-locations', '请记住以下方块位置') : gameStatus.over ? $t('game-over', '游戏结束') : $t('start', '游戏开始') }}<template v-if="countdown">
+        {{ gameStatus.previewing ? $t('remember-block-locations', '请记住以下方块位置') : gameStatus.over ? $t('game-over', '游戏结束') : $t('start', '游戏开始')
+        }}<template v-if="countdown">
           ({{ countdown }})
         </template>
       </h2>
@@ -349,15 +354,8 @@ onBeforeUnmount(() => {
         <div class="flex items-center h-8 px-2 pt-0.5 rounded-full border border-input bg-slate-100 dark:bg-slate-800">
           <i class="i-solar-health-bold text-lg mr-1 text-red-500" />
           <div v-if="gameHealth <= 5" class="w-4 h-4 mx-auto overflow-hidden">
-            <div
-              class="w-4 transition-transform duration-300 ease-in translate-y-[var(--ty)]"
-              :style="`--ty: ${-gameHealth}rem`"
-            >
-              <span
-                v-for="val of gameHealthList"
-                :key="val"
-                class="size-4 leading-none text-center block"
-              >
+            <div class="w-4 transition-transform duration-300 ease-in translate-y-[var(--ty)]" :style="`--ty: ${-gameHealth}rem`">
+              <span v-for="val of gameHealthList" :key="val" class="size-4 leading-none text-center block">
                 {{ val }}
               </span>
             </div>
@@ -370,13 +368,13 @@ onBeforeUnmount(() => {
           <!-- 积分货币 -->
           <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
             <i class="i-solar-chat-round-money-bold text-lg mr-1 text-yellow-400" />
-            <span class="flex-1 text-center max-w-80 truncate">{{ gameMoney }}</span>
+            <span class="flex-1 text-center max-w-80 truncate">{{ formatScore(gameMoney) }}</span>
           </div>
 
           <!-- 历史最高分 -->
           <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
             <i class="i-solar-ranking-bold-duotone text-lg mr-1 text-orange-400 translate-x-0.5" />
-            <span class="flex-1 text-center max-w-80 truncate">{{ highestScore }}</span>
+            <span class="flex-1 text-center max-w-80 truncate">{{ formatScore(highestScore) }}</span>
           </div>
         </template>
       </div>
@@ -384,7 +382,10 @@ onBeforeUnmount(() => {
       <div class="relative mb-2 text-5xl text-center">
         <span class="z-10 font-mono font-medium">{{ formatScore(gameScore) }}</span>
 
-        <span v-if="showScoreBadge" class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500">BEST</span>
+        <span
+          v-if="showScoreBadge"
+          class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500"
+        >BEST</span>
 
         <Transition name="increase-score">
           <span
@@ -395,27 +396,25 @@ onBeforeUnmount(() => {
         </Transition>
       </div>
 
-      <Grid
-        :config="levelConfig"
-        :is-max="checkedNumber >= targetBlocks.size"
-        :class="gameStatus.playing ? 'playing' : 'pointer-events-none'"
-        @change="onCheckboxChange"
-      />
+      <div class="relative w-max mx-auto">
+        <Grid
+          :config="levelConfig"
+          :is-max="checkedNumber >= targetBlocks.size"
+          :class="gameStatus.playing ? 'playing' : 'pointer-events-none'"
+          @change="onCheckboxChange"
+        />
 
-      <div class="mt-12 mb-20 gap-4 flex justify-center">
-        <Button
-          :disabled="gameStatus.previewing || gameStatus.pause"
-          @click="onResetBlocks"
-        >
+        <i v-if="ignoreErrorPropCounts > 0" class="i-game-icons-broken-shield text-teal-600 opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[200px] pointer-events-none" />
+      </div>
+
+      <div class="mt-12 mb-20 gap-3 flex justify-center">
+        <PropsBag :disabled="gameStatus.previewing || gameStatus.pause" @use-props="onUseProps" />
+
+        <Button :disabled="gameStatus.previewing || gameStatus.pause" @click="onResetBlocks">
           {{ gameStatus.over ? $t('again', '再来一次') : $t('clear', '清空选中') }}
         </Button>
 
-        <Button
-          v-show="!gameStatus.over"
-          :disabled="gameStatus.previewing"
-          :type="gameStatus.pause ? 'warning' : 'primary'"
-          @click="onCheckResult"
-        >
+        <Button v-show="!gameStatus.over" :disabled="gameStatus.previewing" :type="gameStatus.pause ? 'warning' : 'primary'" @click="onCheckResult">
           {{ gameStatus.pause ? $t('continue', '继续') : $t('selected', '选好了') }}
         </Button>
       </div>

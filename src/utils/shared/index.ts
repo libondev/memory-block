@@ -46,3 +46,12 @@ export const prefersDarkColorScheme = () => window && window.matchMedia && windo
  * @param object 要检测的对象
  */
 export const isEmptyObject = (object: object) => Reflect.ownKeys(object).length === 0
+
+// 千分位格式化分数
+export function formatScore(score: number) {
+  const numStr = score.toString()
+  const reg = /\B(?=(\d{3})+(?!\d))/g
+  return numStr.replace(reg, ',')
+}
+
+export const isMobile = 'ontouchstart' in window
