@@ -9,7 +9,7 @@ const key = computed(() => lang.value.split('-')[0])
 
 <template>
   <div className="h-full flex flex-col items-center justify-center">
-    <h2 className="-mt-24 mb-12 text-center text-4xl text-medium font-mono">
+    <h2 className="mb-12 text-center text-4xl text-medium font-mono">
       {{ $t('memory-block', '记忆方块') }}
     </h2>
 

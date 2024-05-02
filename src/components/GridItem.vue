@@ -34,7 +34,7 @@ function handleChange(e: Event) {
   <label class="block select-none" :class="[color, size]">
     <input type="checkbox" class="peer hidden" v-bind="$attrs" @change="handleChange">
 
-    <i class="bubbly relative inline-block w-full h-full rounded-xl text-transparent bg-current hover:transition-all peer-checked:text-inherit peer-checked:shadow-[0_0_8px_currentColor]" />
+    <i class="bubbly relative inline-block w-full h-full rounded-lg text-transparent bg-current hover:transition-all peer-checked:text-inherit peer-checked:shadow-[0_0_8px_currentColor]" />
   </label>
 </template>
 

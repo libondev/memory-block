@@ -10,11 +10,9 @@ export function useGameScore(
   const timestamp = shallowRef(0)
   const gameScore = shallowRef(0)
   const gameMoney = shallowRef(0)
-  const deltaScore = shallowRef(0)
-  const showDeltaScore = shallowRef(false)
 
   const highestScore = shallowRef(0)
-  const showScoreBadge = shallowRef(false)
+  const showHighestScoreBadge = shallowRef(false)
 
   let lastTimestamp = 0
   let timestampId = -1
@@ -27,11 +25,9 @@ export function useGameScore(
     const timeScoreRate = Math.max(BASIC_GAME_RATE - Math.floor(deltaTime / 5000), 1)
 
     // 计分公式: 方块数量 * 难度倍率 * 时间倍率
-    deltaScore.value = Math.round(blocks.value.size * multiplier * timeScoreRate)
+    const deltaScore = Math.round(blocks.value.size * multiplier * timeScoreRate)
 
-    gameScore.value += deltaScore.value
-
-    showDeltaScore.value = true
+    gameScore.value += deltaScore
   }
 
   /**
@@ -39,8 +35,6 @@ export function useGameScore(
    * @param lastTime 上次记录的时间, 用于恢复
    */
   function startRecording(lastTime: number = 0) {
-    showDeltaScore.value = false
-
     timestamp.value = lastTime
     lastTimestamp = performance.now()
 
@@ -54,14 +48,8 @@ export function useGameScore(
     clearInterval(timestampId)
   }
 
-  function onEndHideDeltaScore() {
-    showDeltaScore.value = false
-  }
-
   // 更新历史最高分状态
   function updateHighestScoreStatus(level: GameLevel) {
-    onEndHideDeltaScore()
-
     getHighestScoreInHistory(level).then((v) => {
       // 更新历史最高分
       highestScore.value = v || 0
@@ -76,15 +64,12 @@ export function useGameScore(
     timestamp,
     gameScore,
     gameMoney,
-    deltaScore,
     highestScore,
-    showDeltaScore,
-    showScoreBadge,
+    showHighestScoreBadge,
 
     setGameScore,
     stopRecording,
     startRecording,
-    onEndHideDeltaScore,
     updateHighestScoreStatus,
   }
 }

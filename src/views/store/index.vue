@@ -7,6 +7,10 @@ import {
   setGameMoney,
 } from '@/composables/use-local-cache'
 
+const {
+  success: playSuccessSound,
+} = useGameSounds()
+
 const gameGoods = ref<GameGood[]>([])
 
 const gameMoney = shallowRef(0)
@@ -20,6 +24,8 @@ function buyGood(good: typeof GAME_GOODS[number]) {
 
   gameMoney.value -= good.price
   setGameMoney(gameMoney.value)
+
+  playSuccessSound()
 
   const targetGood = gameGoods.value.find(g => g.id === good.id)
 
@@ -71,7 +77,7 @@ onMounted(() => {
   <div class="h-full w-full max-w-[700px] px-4 mx-auto overflow-auto">
     <div class="w-full flex items-center justify-center mt-12 mb-8 font-mono">
       <i class="i-solar-chat-round-money-bold mr-1.5 text-3xl text-yellow-400" />
-      <span class="text-[45px]">{{ gameMoney }}</span>
+      <Increase :value="gameMoney" class="text-[45px]" color="text-red-500" />
     </div>
 
     <ul class="flex flex-wrap items-center gap-4 w-full">
@@ -81,7 +87,8 @@ onMounted(() => {
 
           <span class="absolute bottom-0.5 right-0.5 z-10 select-none flex items-center text-sm font-medium rounded-sm px-1 text-foreground bg-white/70 dark:bg-white/20">
             <i class="i-solar-chat-round-money-bold mr-0.5 text-yellow-400" />
-            {{ good.price }}
+            <span>{{ good.price }}</span>
+            <!-- <span>{{ good.discountPrice }}</span> -->
           </span>
         </div>
 
@@ -99,7 +106,10 @@ onMounted(() => {
           </p>
 
           <div class="flex items-center justify-between gap-2 select-none">
-            <button class="flex items-center justify-center w-full text-sm rounded-md py-1 px-2 text-white font-medium bg-emerald-500 active:bg-emerald-600 dark:bg-emerald-600 dark:active:bg-emerald-700 shadow-sm cursor-pointer" @click="buyGood(good)">
+            <button
+              class="flex items-center justify-center w-full text-sm rounded-md py-1 px-2 text-white font-medium bg-emerald-500 active:bg-emerald-600 dark:bg-emerald-600 dark:active:bg-emerald-700 shadow-sm cursor-pointer"
+              @click="buyGood(good)"
+            >
               <i class="i-solar-bag-3-bold-duotone translate-y-[1px] text-lg mr-1" />
               Buy
             </button>
