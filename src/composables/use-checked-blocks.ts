@@ -107,7 +107,7 @@ export function useCheckedBlocks(blocks: Ref<Set<string>>) {
     const checkedBlocks = getAllCheckedBlocks()
 
     // 如果道具的数量
-    if (ignoreErrorProp.value >= 0) {
+    if (ignoreErrorProp.value > 0) {
       ignoreErrorProp.value -= 1
 
       return {
