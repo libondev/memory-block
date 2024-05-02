@@ -13,7 +13,10 @@ interface GameSounds {
   }
 }
 
-export const gameSoundsInjectionKey = Symbol('gameSounds') as InjectionKey<GameSounds>
+// 因为 Symbol 每次热更新的时候都会变, 导致开发环境下用这个会导致热更新以后inject错误
+export const gameSoundsInjectionKey = import.meta.env.PROD
+  ? Symbol('gameSounds') as InjectionKey<GameSounds>
+  : 'gameSounds'
 
 export function provideGameSounds() {
   const enableSounds = useStorage(`${name}.fe.game-sounds`, true)
@@ -28,8 +31,8 @@ export function provideGameSounds() {
   }
 
   provide(gameSoundsInjectionKey, {
-    enableSounds,
     toggleSounds,
+    enableSounds,
     sounds,
   })
 }
@@ -37,47 +40,25 @@ export function provideGameSounds() {
 export function useGameSounds() {
   const { sounds, enableSounds } = inject(gameSoundsInjectionKey)!
 
+  // 确保每次都能正常播放(如果之前正在播放则暂停并重置进度)
+  function ensurePlay(audio: HTMLAudioElement) {
+    return () => {
+      if (!enableSounds.value) {
+        return
+      }
+
+      audio.pause()
+      audio.currentTime = 0
+      audio.play()
+    }
+  }
+
   return {
-    // choose: () => {
-    //   if (!enableSounds.value) {
-    //     return
-    //   }
+    // choose: ensurePlay(sounds.choose),
 
-    //   audio.src = new URL('/choose.mp3', import.meta.url).href
-    //   audio.play()
-    // },
-
-    fail: () => {
-      if (!enableSounds.value) {
-        return
-      }
-
-      sounds.fail.play()
-    },
-
-    success: () => {
-      if (!enableSounds.value) {
-        return
-      }
-
-      sounds.success.play()
-    },
-
-    error: () => {
-      if (!enableSounds.value) {
-        return
-      }
-
-      // audio.src = new URL('/error.mp3', import.meta.url).href
-      sounds.error.play()
-    },
-
-    over: () => {
-      if (!enableSounds.value) {
-        return
-      }
-
-      sounds.over.play()
-    },
+    fail: ensurePlay(sounds.fail),
+    success: ensurePlay(sounds.success),
+    error: ensurePlay(sounds.error),
+    over: ensurePlay(sounds.over),
   }
 }

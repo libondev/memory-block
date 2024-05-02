@@ -10,7 +10,9 @@ interface I18N {
   $t: (key: string, fallback?: string) => string
 }
 
-export const i18NInjectionKey = Symbol('i18n') as InjectionKey<I18N>
+export const i18NInjectionKey = import.meta.env.PROD
+  ? Symbol('i18n') as InjectionKey<I18N>
+  : 'i18n'
 
 export function useI18N() {
   const lang = shallowRef<Language>(getLanguage() as Language)
