@@ -17,6 +17,8 @@ const gameMoney = shallowRef(0)
 
 // 商人倒计时
 const comingCountdown = computed(() => {
+  return 1
+
   const now = new Date()
 
   // 如果已经是星期六和星期天则返回 0
@@ -104,7 +106,7 @@ onMounted(() => {
     <div v-else class="mb-6 pl-2 relative">
       <img src="@/assets/merchant.png" class="h-40" alt="">
 
-      <div class="absolute left-32 right-4 top-3 sm:top-8 p-2 rounded-lg border border-input">
+      <div class="absolute left-32 right-4 top-2 sm:top-8 p-2 rounded-lg border border-input">
         你好，我是<span class="line-through opacity-30">(流浪)</span>旅行至此的商人，我每周末都会为你带来更低的价格<span class="line-through opacity-30">(别问为什么，问就是老板是我表哥)</span>，随便看看吧！<span class="line-through opacity-30">(商品滞销帮帮我们)</span>
       </div>
     </div>

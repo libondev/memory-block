@@ -6,8 +6,17 @@
 
 ---
 
+## 截图
+<div style="display: flex;align-items:start;overflow:auto">
+  <img alt="主界面" src="./res/homepage.png" />
+  <img alt="练习模式设置" src="./res/custom.png" />
+  <img alt="游戏界面" src="./res/game.png" />
+  <img alt="商店" src="./res/store-1.png" />
+  <img alt="商人" src="./res/store-2.png" />
+</div>
+
 ## 在线游玩
-对，你现在就可以立马玩到这款有趣的 [Memory Block](https://libondev.github.io/memory-block/) 小游戏（确信！）
+你现在就可以立马玩到这款有趣的 [Memory Block](https://libondev.github.io/memory-block/) 小游戏
 
 ## 游戏规则
 - 选择游戏难度
