@@ -17,8 +17,6 @@ const gameMoney = shallowRef(0)
 
 // 商人倒计时
 const comingCountdown = computed(() => {
-  return 1
-
   const now = new Date()
 
   // 如果已经是星期六和星期天则返回 0
