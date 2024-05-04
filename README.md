@@ -8,11 +8,11 @@
 
 ## 截图
 <div style="display: flex;align-items:start;overflow:auto">
-  <img alt="主界面" src="./res/homepage.png" />
-  <img alt="练习模式设置" src="./res/custom.png" />
-  <img alt="游戏界面" src="./res/game.png" />
-  <img alt="商店" src="./res/store-1.png" />
-  <img alt="商人" src="./res/store-2.png" />
+  <img width="100" height="200" alt="主界面" src="./res/homepage.png" />
+  <img width="100" height="200" alt="练习模式设置" src="./res/custom.png" />
+  <img width="100" height="200" alt="游戏界面" src="./res/game.png" />
+  <img width="100" height="200" alt="商店" src="./res/store-1.png" />
+  <img width="100" height="200" alt="商人" src="./res/store-2.png" />
 </div>
 
 ## 在线游玩
@@ -44,7 +44,7 @@
 - [x] 积分系统
 - [x] 道具兑换
 - [x] 道具系统
-- [ ] 流浪商人(道具打折扣)
+- [x] 道具商人
 
 ### 后续功能
 一些想做但不确定会不会做的功能
@@ -54,7 +54,7 @@
 ## 补充
 - 图标来自于：[iconify](https://iconify.design/)，同时使用了 [icones](https://icones.js.org/) 网站来预览图
 - 有趣的游戏音效来自：[Duolingo](https://www.duolingo.com/)，因为我也是个Duolingo软件的忠实用户，很喜欢TA的音效设计。PS：请原谅我未经允许的使用😜
-- 项目技术栈为：Vue3 + Vite5 + TypeScript + TailwindCSS + VueRouter + VueUse + Pinia
+- 项目技术栈为：Vue3 + Vite5 + TypeScript + TailwindCSS + VueRouter + VueUse
 
 <!--
 Scale
