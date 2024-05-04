@@ -55,14 +55,11 @@ const {
   timestamp,
   gameScore,
   gameMoney,
-  deltaScore,
   highestScore,
-  showDeltaScore,
-  showScoreBadge,
+  showHighestScoreBadge,
   setGameScore,
   stopRecording,
   startRecording,
-  onEndHideDeltaScore,
   updateHighestScoreStatus,
 } = useGameScore(levelConfig, targetBlocks)
 
@@ -171,26 +168,29 @@ function onCheckResult() {
 
 function gameOver() {
   stopRecording()
-  playFailSound()
   markAllMissBlocks()
   markAllWrongBlocks()
   setGameStatus('over')
-
   useToastError($t('game-over', '游戏结束'))
 
+  // 更新游戏积分
   setGameMoney(gameMoney.value += gameScore.value)
 
   // 如果分数比历史最高分高, 更新历史最高分, 并播放纸屑
   if (gameScore.value > highestScore.value) {
-    showScoreBadge.value = true
+    showHighestScoreBadge.value = true
     highestScore.value = gameScore.value
 
     playOverSound()
     confetti({ spread: 120, particleCount: 300 })
     setHighestScoreInHistory(level, gameScore.value)
+  } else {
+    // 如果分数没有超过最高分则只播放失败的音效
+    playFailSound()
   }
 }
 
+// 清空选中的方块或者重新开始
 function onResetBlocks() {
   uncheckAllBlocks()
 
@@ -233,20 +233,19 @@ function onRestoreLocalStatus() {
   }
 
   try {
-    const { _score, _health, _blocks, _ignoreError } = JSON.parse(localCache)
+    const { _score, _timer, _health, _blocks, _ignoreError } = JSON.parse(localCache)
 
+    // 取消预览时间
+    countdown.value = 0
     gameScore.value = _score
     gameHealth.value = _health
     targetBlocks.value = new Set(_blocks)
     ignoreErrorPropCounts.value = Number(_ignoreError)
 
     uncheckAllBlocks()
-    checkedTargetBlock()
-
-    // 恢复后进入预览模式, 重新开始读秒，主要是需要恢复分数和血量
-    setGameStatus('previewing')
-    resetPrewiewCountdown()
-    startPreviewCountdown()
+    startRecording(_timer)
+    pausePreviewCountdown()
+    setGameStatus('playing')
 
     // 恢复后删除本地缓存
     localStorage.removeItem(savedLocalStatusKey)
@@ -257,6 +256,7 @@ function onRestoreLocalStatus() {
 function onPageHideSaveLocalStatus() {
   // 保存游戏状态
   localStorage.setItem(savedLocalStatusKey, JSON.stringify({
+    _timer: timestamp.value,
     _score: gameScore.value,
     _health: gameHealth.value,
     _blocks: [...targetBlocks.value],
@@ -290,23 +290,33 @@ function onUseProps({ id }: GameGood) {
   switch (id) {
     // 再来一次
     case 'REGENERATE':
+      stopRecording()
       startGame()
       break
+
     // 忽略本次提交选择的错误
     case 'IGNORE_ERROR':
       ignoreErrorPropCounts.value += 1
       break
+
     // 再看一次
     case 'LOOK_AGAIN':
+      stopRecording()
+      // 暂停正计时
+      // 回到预览阶段并开始预览的计时
       setGameStatus('previewing')
+      // 先取消手动选择的
+      uncheckAllBlocks()
       checkedTargetBlock()
       resetPrewiewCountdown()
       startPreviewCountdown()
       break
+
     // 恢复一点生命值
     case 'RESTORE_LIFE':
       gameHealth.value += 1
       break
+
     default:
       break
   }
@@ -340,7 +350,7 @@ onBeforeUnmount(() => {
         </template>
       </h2>
 
-      <div class="mx-auto my-3 font-mono flex flex-wrap items-center justify-center leading-none gap-2 max-w-96">
+      <div class="mx-auto my-4 font-mono flex flex-wrap items-center justify-center leading-none gap-2 max-w-96">
         <div class="flex items-center h-8 px-2 rounded-full border border-input bg-slate-100 dark:bg-slate-800 min-w-[75px]">
           <i class="i-solar-stop-bold text-lg mr-1 text-emerald-500" />
           <span class="flex-1 text-center">{{ checkedNumber }}/{{ targetBlocks.size }}</span>
@@ -379,22 +389,14 @@ onBeforeUnmount(() => {
         </template>
       </div>
 
-      <div class="relative mb-3 text-5xl text-center">
+      <Increase :value="gameScore" class="text-5xl mb-3 text-center">
         <span class="z-10 font-mono font-medium">{{ formatScore(gameScore) }}</span>
 
         <span
-          v-if="showScoreBadge"
+          v-if="showHighestScoreBadge"
           class="absolute -translate-x-2 text-xs rotate-45 inline-block font-bold px-2 rounded-full border-2 border-red-500 text-red-500"
         >BEST</span>
-
-        <Transition name="increase-score">
-          <span
-            v-show="showDeltaScore"
-            class="absolute text-[60%] text-emerald-500 duration-500 animate-in fade-in slide-in-from-bottom"
-            @animationend="onEndHideDeltaScore"
-          >+{{ deltaScore }}</span>
-        </Transition>
-      </div>
+      </Increase>
 
       <div class="relative w-max mx-auto">
         <Grid
@@ -408,7 +410,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="mt-12 mb-20 gap-3 flex justify-center">
-        <PropsBag :disabled="gameStatus.previewing || gameStatus.pause" @use-props="onUseProps" />
+        <PropsBag v-show="!gameStatus.over" :disabled="gameStatus.previewing || gameStatus.pause" @use-props="onUseProps" />
 
         <Button :disabled="gameStatus.previewing || gameStatus.pause" @click="onResetBlocks">
           {{ gameStatus.over ? $t('again', '再来一次') : $t('clear', '清空选中') }}
@@ -421,15 +423,3 @@ onBeforeUnmount(() => {
     </div>
   </main>
 </template>
-
-<style>
-.increase-score-enter-active,
-.increase-score-leave-active {
-  transition: all 0.5s ease;
-}
-
-.increase-score-enter-from,
-.increase-score-leave-to {
-  opacity: 0;
-}
-</style>
