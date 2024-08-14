@@ -17,7 +17,6 @@
     "@headlessui/vue": "^1.7.19",
     "@iconify-json/game-icons": "^1.1.7",
     "@vueuse/core": "^10.9.0",
-    "axios": "^1.6.8",
     "canvas-confetti": "^1.9.2",
     "date-fns": "^3.5.0",
     "localforage": "^1.10.0",
